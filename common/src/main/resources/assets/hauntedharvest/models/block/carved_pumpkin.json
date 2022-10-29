@@ -1,0 +1,20 @@
+{
+  "loader": "harvestseason:carved_pumpkin",
+  "model": {
+    "parent": "harvestseason:block/carved_pumpkin_frame",
+    "textures": {
+		"side": "block/pumpkin_side",
+		"background": "harvestseason:block/carved_pumpkin_background",
+		"3": "harvestseason:block/carved_pumpkin_top",
+		"4": "block/pumpkin_top",
+		"particle": "block/pumpkin_side"
+    }
+  },
+  "textures": {
+	  "side": "block/pumpkin_side",
+	  "2": "harvestseason:block/carved_pumpkin_background",
+	  "3": "harvestseason:block/carved_pumpkin_top",
+	  "4": "block/pumpkin_top",
+	  "particle": "block/pumpkin_side"
+  }
+}

@@ -1,0 +1,19 @@
+{
+  "variants": {
+    "facing=north": {
+      "model": "harvestseason:block/carved_pumpkin"
+    },
+    "facing=east": {
+      "model": "harvestseason:block/carved_pumpkin",
+      "y": 90
+    },
+    "facing=south": {
+      "model": "harvestseason:block/carved_pumpkin",
+      "y": 180
+    },
+    "facing=west": {
+      "model": "harvestseason:block/carved_pumpkin",
+      "y": 270
+    }
+  }
+}
