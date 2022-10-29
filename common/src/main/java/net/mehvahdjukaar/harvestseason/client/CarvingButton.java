@@ -65,10 +65,13 @@ public class CarvingButton extends GuiComponent implements Widget, GuiEventListe
         TextureAtlasSprite sprite = material.sprite();
         RenderSystem.setShaderTexture(0, sprite.atlas().location());
 
-        sprite.getU0(), sprite.getU1(), sprite.getV0(), sprite.getV1()
+        // sprite.getU0(), sprite.getU1(), sprite.getV0(), sprite.getV1();
 
         RenderSystem.setShaderColor(1, 1, 1, 1.0F);
-        blit(matrixStack, this.x, this.y, (float) (this.u) * WIDTH, (float) this.v * WIDTH, WIDTH, WIDTH, 32 * WIDTH, 16 * WIDTH);
+        int width = (int) (sprite.getWidth() / (sprite.getU1() - sprite.getU0()));
+        int height = (int) (sprite.getHeight() / (sprite.getV1() - sprite.getV0()));
+        blit(matrixStack, this.x, this.y, WIDTH, WIDTH, sprite.getU(u) * width, height * sprite.getV(v), 1, 1,
+                width, height);
 
     }
 

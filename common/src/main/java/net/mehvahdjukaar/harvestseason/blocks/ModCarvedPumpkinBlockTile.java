@@ -25,6 +25,8 @@ public class ModCarvedPumpkinBlockTile extends BlockEntity implements IOwnerProt
 
     public static final ModelDataKey<CarvingKey> CARVING = new ModelDataKey<>(CarvingKey.class);
 
+    private final boolean isJackOLantern;
+
     private UUID owner = null;
     private boolean waxed = false;
     private boolean[][] pixels = new boolean[16][16];
@@ -35,6 +37,11 @@ public class ModCarvedPumpkinBlockTile extends BlockEntity implements IOwnerProt
     public ModCarvedPumpkinBlockTile(BlockPos pos, BlockState state) {
         super(ModRegistry.MOD_CARVED_PUMPKIN_TILE.get(), pos, state);
         this.clear();
+        isJackOLantern = (state.is(ModRegistry.MOD_JACK_O_LANTERN.get()));
+    }
+
+    public boolean isJackOLantern() {
+        return isJackOLantern;
     }
 
     @Override
@@ -50,7 +57,7 @@ public class ModCarvedPumpkinBlockTile extends BlockEntity implements IOwnerProt
     }
 
     public void refreshTextureKey() {
-        this.textureKey = CarvingKey.of(packPixels(this.pixels));
+        this.textureKey = CarvingKey.of(packPixels(this.pixels), this.isJackOLantern);
     }
 
     @Override
@@ -103,7 +110,7 @@ public class ModCarvedPumpkinBlockTile extends BlockEntity implements IOwnerProt
         for (int a = 0; a < pixels.length; a++) {
             int s = 0;
             for (int i = 0; i < pixels.length; i++) {
-                s =  (s | ((toShort(pixels[a][i]) & 1) << i));
+                s = (s | ((toShort(pixels[a][i]) & 1) << i));
             }
             n = n | (long) s << ((a % 4) * 16);
             if ((a + 1) % 4 == 0) {
@@ -149,7 +156,7 @@ public class ModCarvedPumpkinBlockTile extends BlockEntity implements IOwnerProt
     public boolean isEmpty() {
         for (boolean[] pixel : pixels) {
             for (boolean b : pixel) {
-                if (b)return false;
+                if (b) return false;
             }
         }
         return true;

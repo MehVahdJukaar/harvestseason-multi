@@ -1,5 +1,6 @@
 {
-	"item.harvestseason.grim_apple": "Grim Apple",
-	"gui.harvestseason.carve_pumpkin": "Carve",
-    "item.harvestseason.rotten_apple": "Rotten Apple",
+	"item.harvestseason.grim_apple": "Paper Bag",
+	"gui.harvestseason.carving.edit": "Carve",
+	"gui.harvestseason.carving.clear": "Clear",
+    "item.harvestseason.corn": "Corn"
 }

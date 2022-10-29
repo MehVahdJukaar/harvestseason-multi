@@ -50,16 +50,18 @@ public class ModRegistry {
             (new Item.Properties()).tab(CreativeModeTab.TAB_MISC)));
 
 
-    public static final Supplier<Block> MOD_CARVED_PUMPKIN = regBlock("carved_pumpkin",
-            () -> new ModCarvedPumpkinBlock(BlockBehaviour.Properties.copy(Blocks.CARVED_PUMPKIN)));
+    public static final Supplier<Block> MOD_CARVED_PUMPKIN = regWithItem("carved_pumpkin",
+            () -> new ModCarvedPumpkinBlock(BlockBehaviour.Properties.copy(Blocks.CARVED_PUMPKIN)),
+            CreativeModeTab.TAB_DECORATIONS);
 
-    public static final Supplier<Item> MOD_CARVED_PUMPKIN_ITEM = regItem("carved_pumpkin",
-            () -> new BlockItem(MOD_CARVED_PUMPKIN.get(),
-                    new Item.Properties().tab(CreativeModeTab.TAB_DECORATIONS)));
+    public static final Supplier<Block> MOD_JACK_O_LANTERN = regWithItem("jack_o_lantern",
+            () -> new ModCarvedPumpkinBlock(BlockBehaviour.Properties.copy(Blocks.CARVED_PUMPKIN)),
+            CreativeModeTab.TAB_DECORATIONS);
 
     public static final Supplier<BlockEntityType<ModCarvedPumpkinBlockTile>> MOD_CARVED_PUMPKIN_TILE =
             regTile("carved_pumpkin", () ->
-                    PlatformHelper.newBlockEntityType(ModCarvedPumpkinBlockTile::new, MOD_CARVED_PUMPKIN.get()));
+                    PlatformHelper.newBlockEntityType(ModCarvedPumpkinBlockTile::new,
+                            MOD_CARVED_PUMPKIN.get(), MOD_JACK_O_LANTERN.get()));
 
 
     public static <T extends Item> Supplier<T> regItem(String name, Supplier<T> sup) {

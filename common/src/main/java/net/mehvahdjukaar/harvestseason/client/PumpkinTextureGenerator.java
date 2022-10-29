@@ -16,7 +16,7 @@ public class PumpkinTextureGenerator {
      * Turns carved pixels matrix into a usable color matrix for the carved section of a pumpkin
      * Rest of the texture is simply using vanilla texture
      */
-    public static Material[][] getTexturePerPixel(boolean[][] pixels) {
+    public static Material[][] getTexturePerPixel(boolean[][] pixels, boolean jackOLantern) {
         Type[][] colors = new Type[16][16];
 
         forEachPixel(colors, (j, i) -> {
@@ -37,6 +37,15 @@ public class PumpkinTextureGenerator {
             addHighlight(colors, j, i);
         });
         Material[][] materials = new Material[16][16];
+        if(jackOLantern){
+            mapJackOLanternMaterials(colors, materials);
+        }else {
+            mapCarvedMaterials(colors, materials);
+        }
+        return materials;
+    }
+
+    private static void mapCarvedMaterials(Type[][] colors, Material[][] materials) {
         forEachPixel(materials, (j, i) -> materials[j][i] = switch (colors[j][i]) {
                     case UNCARVED -> ClientRegistry.PUMPKIN;
                     case SHADE -> ClientRegistry.CARVED_PUMPKIN_SHADE;
@@ -44,7 +53,16 @@ public class PumpkinTextureGenerator {
                     case HIGHLIGHT -> ClientRegistry.PUMPKIN_HIGHLIGHT;
                 }
         );
-        return materials;
+    }
+
+    private static void mapJackOLanternMaterials(Type[][] colors, Material[][] materials) {
+        forEachPixel(materials, (j, i) -> materials[j][i] = switch (colors[j][i]) {
+                    case UNCARVED -> ClientRegistry.PUMPKIN;
+                    case SHADE -> ClientRegistry.JACK_O_LANTERN_SHADE_1;
+                    case BACKGROUND -> ClientRegistry.JACK_O_LANTERN_BACKGROUND;
+                    case HIGHLIGHT -> ClientRegistry.PUMPKIN_HIGHLIGHT;
+                }
+        );
     }
 
     private static void addExtraShade(Type[][] px, int j, int i) {

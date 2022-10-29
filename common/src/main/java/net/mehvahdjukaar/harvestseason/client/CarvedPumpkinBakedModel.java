@@ -5,6 +5,7 @@ import com.mojang.math.Transformation;
 import com.mojang.math.Vector3f;
 import net.mehvahdjukaar.harvestseason.blocks.ModCarvedPumpkinBlock;
 import net.mehvahdjukaar.harvestseason.blocks.ModCarvedPumpkinBlockTile;
+import net.mehvahdjukaar.harvestseason.reg.ModRegistry;
 import net.mehvahdjukaar.moonlight.api.client.model.BakedQuadBuilder;
 import net.mehvahdjukaar.moonlight.api.client.model.CustomBakedModel;
 import net.mehvahdjukaar.moonlight.api.client.model.ExtraModelData;
@@ -19,7 +20,6 @@ import net.minecraft.client.resources.model.BakedModel;
 import net.minecraft.client.resources.model.Material;
 import net.minecraft.client.resources.model.ModelState;
 import net.minecraft.core.Direction;
-import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.level.block.state.BlockState;
 
@@ -87,15 +87,16 @@ public class CarvedPumpkinBakedModel implements CustomBakedModel {
             CarvingManager.CarvingKey key = data.get(ModCarvedPumpkinBlockTile.CARVING);
             if (key != null) {
                 var textureInstance = CarvingManager.getCarvingInstance(key);
-                quads.addAll(textureInstance.getOrCreateModel(dir, b -> generateQuads(b, this.modelTransform)));
+                quads.addAll(textureInstance.getOrCreateModel(dir, () ->
+                        generateQuads(textureInstance.getPixels(), this.modelTransform, textureInstance.isGlow())));
             }
         }
 
         return quads;
     }
 
-    private List<BakedQuad> generateQuads(boolean[][] px, ModelState modelTransform) {
-        Material[][] pixels = PumpkinTextureGenerator.getTexturePerPixel(px);
+    private List<BakedQuad> generateQuads(boolean[][] px, ModelState modelTransform, boolean jackOLantern) {
+        Material[][] pixels = PumpkinTextureGenerator.getTexturePerPixel(px, true);
         List<BakedQuad> quads;
         quads = new ArrayList<>();
         var rotation = modelTransform.getRotation();
@@ -138,10 +139,10 @@ public class CarvedPumpkinBakedModel implements CustomBakedModel {
 
         BakedQuadBuilder builder = BakedQuadBuilder.create();
 
-        float tu = (1-(1+sprite.getWidth() * width));
-        float tv = (1-(1+sprite.getHeight() * height));
-        float u0 = (1-x) * 16;
-        float v0 = (1-y) * 16;
+        float tu = (1 - (1 + sprite.getWidth() * width));
+        float tv = (1 - (1 + sprite.getHeight() * height));
+        float u0 = (1 - x) * 16;
+        float v0 = (1 - y) * 16;
 
         builder.setDirection(Direction.getNearest(normal.x(), normal.y(), normal.z()));
         builder.setSprite(sprite);

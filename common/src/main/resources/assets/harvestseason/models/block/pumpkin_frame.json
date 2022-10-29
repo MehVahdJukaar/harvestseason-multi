@@ -2,11 +2,11 @@
 	"credit": "Made with Blockbench",
 	"parent": "block/block",
 	"textures": {
-		"3": "harvestseason:block/carved_pumpkin_top",
+		"3": "harvestseason:block/jack_o_lantern_top",
 		"4": "block/pumpkin_top",
 		"particle": "block/pumpkin_side",
 		"side": "block/pumpkin_side",
-		"background": "harvestseason:block/carved_pumpkin_background"
+		"background": "harvestseason:block/jack_o_lantern_background"
 	},
 	"elements": [
 		{

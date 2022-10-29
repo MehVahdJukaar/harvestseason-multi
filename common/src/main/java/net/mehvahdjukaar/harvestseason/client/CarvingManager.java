@@ -25,6 +25,7 @@ import javax.annotation.concurrent.Immutable;
 import java.util.*;
 import java.util.concurrent.TimeUnit;
 import java.util.function.Function;
+import java.util.function.Supplier;
 
 public class CarvingManager {
 
@@ -48,7 +49,7 @@ public class CarvingManager {
     public static TextureInstance getCarvingInstance(CarvingKey key) {
         TextureInstance textureInstance = TEXTURE_CACHE.getIfPresent(key);
         if (textureInstance == null) {
-            textureInstance = new TextureInstance(ModCarvedPumpkinBlockTile.unpackPixels(key.values));
+            textureInstance = new TextureInstance(ModCarvedPumpkinBlockTile.unpackPixels(key.values), key.glow);
             TEXTURE_CACHE.put(key, textureInstance);
         }
         return textureInstance;
@@ -100,6 +101,7 @@ public class CarvingManager {
         //models for each direction
         private final Map<Direction, List<BakedQuad>> quadsCache = new EnumMap<>(Direction.class);
         private final boolean[][] pixels;
+        private final boolean glow;
         //he is lazy
         @Nullable
         private DynamicTexture texture;
@@ -108,9 +110,19 @@ public class CarvingManager {
         @Nullable
         private ResourceLocation textureLocation;
 
-        private TextureInstance(boolean[][] pixels) {
+        private TextureInstance(boolean[][] pixels, boolean glow) {
             this.pixels = pixels;
+            this.glow = glow;
         }
+
+        public boolean[][] getPixels() {
+            return pixels;
+        }
+
+        public boolean isGlow() {
+            return glow;
+        }
+
         //cant initialize right away since this texture can be created from worked main tread during model bake since it needs getQuads
 
         private void initializeTexture() {
@@ -129,8 +141,8 @@ public class CarvingManager {
         }
 
         @Nonnull
-        public List<BakedQuad> getOrCreateModel(Direction dir, Function<boolean[][], List<BakedQuad>> modelFactory) {
-            return this.quadsCache.computeIfAbsent(dir, d -> modelFactory.apply(pixels));
+        public List<BakedQuad> getOrCreateModel(Direction dir, Supplier<List<BakedQuad>> modelFactory) {
+            return this.quadsCache.computeIfAbsent(dir, d -> modelFactory.get());
         }
 
         @Nonnull
