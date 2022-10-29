@@ -9,8 +9,12 @@ import net.minecraft.client.gui.components.Widget;
 import net.minecraft.client.gui.components.events.GuiEventListener;
 import net.minecraft.client.gui.narration.NarratableEntry;
 import net.minecraft.client.gui.narration.NarrationElementOutput;
+import net.minecraft.client.renderer.GameRenderer;
+import net.minecraft.client.renderer.texture.TextureAtlasSprite;
+import net.minecraft.client.resources.model.Material;
 import net.minecraft.client.resources.sounds.SimpleSoundInstance;
 import net.minecraft.client.sounds.SoundManager;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.sounds.SoundEvents;
 
 
@@ -47,27 +51,25 @@ public class CarvingButton extends GuiComponent implements Widget, GuiEventListe
 
     @Override
     public void render(PoseStack matrixStack, int mouseX, int mouseY, float partialTicks) {
-        this.isHovered = this.isMouseOver(mouseX, mouseY);
-        this.renderButton(matrixStack);
+
+
         //soboolean wasHovered = this.isHovered();
     }
 
 
-    public void renderButton(PoseStack matrixStack) {
-/*
+    public void renderButton(PoseStack matrixStack, int mouseX, int mouseY, float partialTicks, Material material) {
+        this.isHovered = this.isMouseOver(mouseX, mouseY);
+
         RenderSystem.setShader(GameRenderer::getPositionTexShader);
-        RenderSystem.setShaderTexture(0, ModTextures.BLACKBOARD_GUI_TEXTURE);
+        RenderSystem.setShaderTexture(0, new ResourceLocation("block/pumpkin_side"));
+        TextureAtlasSprite sprite = material.sprite();
+        RenderSystem.setShaderTexture(0, sprite.atlas().location());
 
-        int offset = this.color > 0 ? 16 : 0;
+        sprite.getU0(), sprite.getU1(), sprite.getV0(), sprite.getV1()
 
-        int rgb = BlackboardBlock.colorFromByte(this.color);
-        float b = NativeImage.getR(rgb) / 255f;
-        float g = NativeImage.getG(rgb) / 255f;
-        float r = NativeImage.getB(rgb) / 255f;
+        RenderSystem.setShaderColor(1, 1, 1, 1.0F);
+        blit(matrixStack, this.x, this.y, (float) (this.u) * WIDTH, (float) this.v * WIDTH, WIDTH, WIDTH, 32 * WIDTH, 16 * WIDTH);
 
-        RenderSystem.setShaderColor(r, g, b, 1.0F);
-        blit(matrixStack, this.x, this.y, (float)(this.u + offset) * WIDTH, (float)this.v * WIDTH, WIDTH, WIDTH, 32 * WIDTH, 16 * WIDTH);
-*/
     }
 
     public void renderTooltip(PoseStack matrixStack) {
@@ -79,7 +81,7 @@ public class CarvingButton extends GuiComponent implements Widget, GuiEventListe
         RenderSystem.setShaderColor(0.5f, 0.5f, 0.5f, 1);
 
         blit(matrixStack, this.x - 1, this.y - 1, 16 * WIDTH, 0, WIDTH + 2, WIDTH + 2, 32 * WIDTH, 16 * WIDTH);
-        this.renderButton(matrixStack);
+        //this.renderButton(matrixStack);
     }
 
     //toggle

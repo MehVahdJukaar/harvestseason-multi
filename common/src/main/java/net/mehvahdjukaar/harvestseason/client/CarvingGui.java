@@ -4,20 +4,23 @@ package net.mehvahdjukaar.harvestseason.client;
 import com.mojang.blaze3d.platform.Lighting;
 import com.mojang.blaze3d.vertex.PoseStack;
 import net.mehvahdjukaar.harvestseason.blocks.ModCarvedPumpkinBlockTile;
+import net.mehvahdjukaar.harvestseason.network.NetworkHandler;
+import net.mehvahdjukaar.harvestseason.network.ServerBoundCarvePumpkinPacket;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.screens.Screen;
+import net.minecraft.client.resources.model.Material;
 import net.minecraft.network.chat.CommonComponents;
 import net.minecraft.network.chat.Component;
 
 public class CarvingGui extends Screen {
-    private final ModCarvedPumpkinBlockTile tileBoard;
+    private final ModCarvedPumpkinBlockTile tile;
 
     private final CarvingButton[][] buttons = new CarvingButton[16][16];
 
     private CarvingGui(ModCarvedPumpkinBlockTile teBoard) {
-        super(Component.translatable("gui.supplementaries.blackboard.edit"));
-        this.tileBoard = teBoard;
+        super(Component.translatable("gui.harvestseason.carve_pumpkin"));
+        this.tile = teBoard;
     }
 
     public static void open(ModCarvedPumpkinBlockTile sign) {
@@ -26,7 +29,7 @@ public class CarvingGui extends Screen {
 
     @Override
     public void tick() {
-        if (!this.tileBoard.getType().isValid(this.tileBoard.getBlockState())) {
+        if (!this.tile.getType().isValid(this.tile.getBlockState())) {
             this.close();
         }
     }
@@ -40,24 +43,30 @@ public class CarvingGui extends Screen {
     public void removed() {
         this.minecraft.keyboardHandler.setSendRepeatsToGui(false);
         // send new image to the server
+        boolean[][] pixels = getPixelMatrix();
+        getPixelMatrix();
+        NetworkHandler.CHANNEL.sendToServer(new ServerBoundCarvePumpkinPacket(this.tile.getBlockPos(), pixels));
+    }
+
+    private boolean[][] getPixelMatrix() {
         boolean[][] pixels = new boolean[16][16];
         for (int xx = 0; xx < 16; xx++) {
             for (int yy = 0; yy < 16; yy++) {
                 pixels[xx][yy] = (this.buttons[xx][yy].carved);
             }
         }
-        //NetworkHandler.CHANNEL.sendToServer(new ServerBoundSetBlackboardPacket(this.tileBoard.getBlockPos(), pixels));
+        return pixels;
     }
 
     private void close() {
 
-        this.tileBoard.setChanged();
+        this.tile.setChanged();
         this.minecraft.setScreen(null);
     }
 
     //dynamic refreshTextures for client
     public void setPixel(int x, int y, boolean on) {
-        this.tileBoard.setPixel(x, y, on);
+        this.tile.setPixel(x, y, on);
     }
 
     //calls drag for other buttons
@@ -85,7 +94,7 @@ public class CarvingGui extends Screen {
             for (int yy = 0; yy < 16; yy++) {
                 this.buttons[xx][yy] = new CarvingButton((this.width / 2), 40 + 25, xx, yy, this::setPixel, this::dragButtons);
                 this.addWidget(this.buttons[xx][yy]);
-                this.buttons[xx][yy].carved = this.tileBoard.getPixel(xx, yy);
+                this.buttons[xx][yy].carved = this.tile.getPixel(xx, yy);
             }
         }
 
@@ -100,6 +109,7 @@ public class CarvingGui extends Screen {
         this.renderBackground(matrixstack);
         drawCenteredString(matrixstack, this.font, this.title, this.width / 2, 40, 16777215);
 
+        Material[][] pixels = PumpkinTextureGenerator.getTexturePerPixel(getPixelMatrix());
 
         matrixstack.pushPose();
         //float ff = 93.75F/16f;
@@ -112,7 +122,7 @@ public class CarvingGui extends Screen {
                     ut = xx;
                     vt = yy;
                 }
-                this.buttons[xx][yy].render(matrixstack, mouseX, mouseY, partialTicks);
+                this.buttons[xx][yy].renderButton(matrixstack, mouseX, mouseY, partialTicks, pixels[xx][yy]);
             }
         }
         if (ut != -1) this.buttons[ut][vt].renderTooltip(matrixstack);

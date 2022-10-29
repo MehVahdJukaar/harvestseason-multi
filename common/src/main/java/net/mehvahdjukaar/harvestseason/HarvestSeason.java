@@ -1,5 +1,6 @@
 package net.mehvahdjukaar.harvestseason;
 
+import net.mehvahdjukaar.harvestseason.network.NetworkHandler;
 import net.mehvahdjukaar.harvestseason.reg.ModConfigs;
 import net.mehvahdjukaar.harvestseason.reg.ModRegistry;
 import net.mehvahdjukaar.moonlight.api.platform.PlatformHelper;
@@ -27,6 +28,7 @@ public class HarvestSeason {
         ModConfigs.earlyLoad();
 
         ModRegistry.init();
+        NetworkHandler.registerMessages();
     }
 
     //needs to be fired after configs are loaded
