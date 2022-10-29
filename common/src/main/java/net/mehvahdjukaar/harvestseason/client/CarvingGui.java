@@ -109,7 +109,7 @@ public class CarvingGui extends Screen {
         this.renderBackground(matrixstack);
         drawCenteredString(matrixstack, this.font, this.title, this.width / 2, 40, 16777215);
 
-        Material[][] pixels = PumpkinTextureGenerator.getTexturePerPixel(getPixelMatrix());
+        Material[][] materials = PumpkinTextureGenerator.getTexturePerPixel(getPixelMatrix());
 
         matrixstack.pushPose();
         //float ff = 93.75F/16f;
@@ -122,7 +122,8 @@ public class CarvingGui extends Screen {
                     ut = xx;
                     vt = yy;
                 }
-                this.buttons[xx][yy].renderButton(matrixstack, mouseX, mouseY, partialTicks, pixels[xx][yy]);
+                this.buttons[xx][yy].setMaterial(materials[xx][yy]);
+                this.buttons[xx][yy].render(matrixstack, mouseX, mouseY, partialTicks);
             }
         }
         if (ut != -1) this.buttons[ut][vt].renderTooltip(matrixstack);

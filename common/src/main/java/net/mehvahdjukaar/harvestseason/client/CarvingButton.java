@@ -30,6 +30,7 @@ public class CarvingButton extends GuiComponent implements Widget, GuiEventListe
 
     private final IDraggable onDragged;
     private final IPressable onPress;
+    private Material material;
 
     public CarvingButton(int centerX, int centerY, int u, int v, IPressable pressedAction,
                          IDraggable dragAction) {
@@ -39,6 +40,10 @@ public class CarvingButton extends GuiComponent implements Widget, GuiEventListe
         this.v = v;
         this.onPress = pressedAction;
         this.onDragged = dragAction;
+    }
+
+    public void setMaterial(Material material) {
+        this.material = material;
     }
 
     public void setCarved(boolean carved) {
@@ -51,24 +56,27 @@ public class CarvingButton extends GuiComponent implements Widget, GuiEventListe
 
     @Override
     public void render(PoseStack matrixStack, int mouseX, int mouseY, float partialTicks) {
-
-
+        this.isHovered = this.isMouseOver(mouseX, mouseY);
         //soboolean wasHovered = this.isHovered();
+        renderButton(matrixStack);
     }
 
 
-    public void renderButton(PoseStack matrixStack, int mouseX, int mouseY, float partialTicks, Material material) {
-        this.isHovered = this.isMouseOver(mouseX, mouseY);
+    public void renderButton(PoseStack matrixStack) {
 
         RenderSystem.setShader(GameRenderer::getPositionTexShader);
         RenderSystem.setShaderTexture(0, new ResourceLocation("block/pumpkin_side"));
         TextureAtlasSprite sprite = material.sprite();
         RenderSystem.setShaderTexture(0, sprite.atlas().location());
 
-        sprite.getU0(), sprite.getU1(), sprite.getV0(), sprite.getV1()
+        //sprite.getU0(), sprite.getU1(), sprite.getV0(), sprite.getV1()
 
         RenderSystem.setShaderColor(1, 1, 1, 1.0F);
-        blit(matrixStack, this.x, this.y, (float) (this.u) * WIDTH, (float) this.v * WIDTH, WIDTH, WIDTH, 32 * WIDTH, 16 * WIDTH);
+        blit(matrixStack, this.x, this.y, 0, (this.u),
+                this.v, sprite);
+        blit(matrixStack, this.x, this.y,  WIDTH, WIDTH,
+                sprite.getU ((float)(this.u + 0) * WIDTH), sprite.getV((float)this.v * WIDTH),
+                1, 1, sprite.getWidth(), sprite.getHeight());
 
     }
 
@@ -80,8 +88,8 @@ public class CarvingButton extends GuiComponent implements Widget, GuiEventListe
 
         RenderSystem.setShaderColor(0.5f, 0.5f, 0.5f, 1);
 
-        blit(matrixStack, this.x - 1, this.y - 1, 16 * WIDTH, 0, WIDTH + 2, WIDTH + 2, 32 * WIDTH, 16 * WIDTH);
-        //this.renderButton(matrixStack);
+     //   blit(matrixStack, this.x - 1, this.y - 1, WIDTH, 0, WIDTH + 2, WIDTH + 2, 32 * WIDTH, 16 * WIDTH);
+       // this.renderButton(matrixStack);
     }
 
     //toggle
