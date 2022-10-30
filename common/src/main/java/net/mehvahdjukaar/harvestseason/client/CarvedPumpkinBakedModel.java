@@ -141,10 +141,11 @@ public class CarvedPumpkinBakedModel implements CustomBakedModel {
         float u0 = (1 - x) * 16;
         float v0 = (1 - y) * 16;
 
-        BakedQuadBuilder builder = BakedQuadBuilder.create(null);
+        //this just wraps around forge baked quad builder
+        BakedQuadBuilder builder = BakedQuadBuilder.create();
 
         if (x == 4 / 16f || x == 11 / 16f) {
-
+            //buggy quads on west and east
         }
 
         builder.setDirection(dd);
