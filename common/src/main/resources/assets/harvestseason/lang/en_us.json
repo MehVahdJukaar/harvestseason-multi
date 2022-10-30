@@ -2,5 +2,7 @@
 	"item.harvestseason.grim_apple": "Paper Bag",
 	"gui.harvestseason.carving.edit": "Carve",
 	"gui.harvestseason.carving.clear": "Clear",
-    "item.harvestseason.corn": "Corn"
+    "item.harvestseason.corn": "Corn",
+    "block.harvestseason.jack_o_lantern": "Jack_o_lantern",
+    "block.harvestseason.carved_pumpkin": "Carved Pumpkin"
 }

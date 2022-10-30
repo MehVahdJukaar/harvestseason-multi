@@ -11,6 +11,7 @@ import net.mehvahdjukaar.moonlight.api.client.util.LOD;
 import net.mehvahdjukaar.moonlight.api.client.util.RotHlpr;
 import net.minecraft.client.Camera;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.renderer.LevelRenderer;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.blockentity.BlockEntityRenderer;
@@ -51,6 +52,7 @@ public class CarvedPumpkinTileRenderer implements BlockEntityRenderer<ModCarvedP
     public void render(ModCarvedPumpkinBlockTile tile, float partialTicks, PoseStack matrixStackIn, MultiBufferSource bufferIn, int combinedLightIn,
                        int combinedOverlayIn) {
 
+        if(true)return;
         if (!ModConfigs.CARVE_MODE.get().canManualDraw()) return;
 
         Direction dir = tile.getDirection();
@@ -60,23 +62,26 @@ public class CarvedPumpkinTileRenderer implements BlockEntityRenderer<ModCarvedP
         BlockPos pos = tile.getBlockPos();
         if (LOD.isOutOfFocus(cameraPos, pos, yaw, 0, dir, WIDTH / 16f)) return;
 
-        matrixStackIn.pushPose();
-        matrixStackIn.translate(0.5, 0.5, 0.5);
-        matrixStackIn.mulPose(RotHlpr.rot(dir));
-        matrixStackIn.mulPose(RotHlpr.XN90);
-        matrixStackIn.translate(-0.5, -0.5, -0.1875);
-
-
-        int lu = combinedLightIn & '\uffff';
-        int lv = combinedLightIn >> 16 & '\uffff';
 
         HitResult hit = mc.hitResult;
         if (hit != null && hit.getType() == HitResult.Type.BLOCK) {
             BlockHitResult blockHit = (BlockHitResult) hit;
             if (blockHit.getBlockPos().equals(pos) && tile.getDirection() == blockHit.getDirection()) {
                 Player player = mc.player;
-                if (player != null) {
+                if (player != null && tile.getLevel() != null) {
                     if (ModCarvedPumpkinBlock.isCarverItem(player.getMainHandItem())) {
+
+                        matrixStackIn.pushPose();
+                        matrixStackIn.translate(0.5, 0.5, 0.5);
+                        matrixStackIn.mulPose(RotHlpr.rot(dir));
+                        matrixStackIn.mulPose(RotHlpr.XN90);
+                        matrixStackIn.translate(-0.5, -0.5, 0.5);
+
+                        combinedLightIn = LevelRenderer.getLightColor(tile.getLevel(), pos.relative(dir));
+
+                        int lu = combinedLightIn & '\uffff';
+                        int lv = combinedLightIn >> 16 & '\uffff';
+
                         Pair<Integer, Integer> pair = ModCarvedPumpkinBlock.getHitSubPixel(blockHit);
                         float p = 1 / 16f;
                         float x = pair.getFirst() * p;
@@ -88,14 +93,14 @@ public class CarvedPumpkinTileRenderer implements BlockEntityRenderer<ModCarvedP
                         addQuadSide(builder2, matrixStackIn, 0, 0, 0, p, p, 0, 0, 0, 1, 1,
                                 1, 1, 1, 1, lu, lv, 0, 0, 1, ClientRegistry.CARVING_OUTLINE.sprite());
                         matrixStackIn.popPose();
+
+                        matrixStackIn.popPose();
                     }
                 }
             }
         }
-        // VertexConsumer builder = bufferIn.getBuffer(BlackboardTextureManager.INSTANCE.getBlackboardInstance(tile).getRenderType());
-        // RendererUtil.addQuadSide(builder, matrixStackIn, 0, 0, 0, 1, 1, 0, 0, 0, 1, 1, 1, 1, 1, 1, lu, lv, 0, 0, 1);
 
-        matrixStackIn.popPose();
+
 
     }
 

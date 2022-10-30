@@ -111,16 +111,16 @@ public class CarvingGui extends Screen {
     }
 
     @Override
-    public void render(PoseStack matrixstack, int mouseX, int mouseY, float partialTicks) {
+    public void render(PoseStack poseStack, int mouseX, int mouseY, float partialTicks) {
         Lighting.setupForFlatItems();
-        this.renderBackground(matrixstack);
-        drawCenteredString(matrixstack, this.font, this.title, this.width / 2, 40, 16777215);
+        this.renderBackground(poseStack);
+        drawCenteredString(poseStack, this.font, this.title, this.width / 2, 40, 16777215);
 
-        Material[][] materials = PumpkinTextureGenerator.getTexturePerPixel(getPixelMatrix());
+        Material[][] materials = PumpkinTextureGenerator.getTexturePerPixel(getPixelMatrix(), tile.isJackOLantern());
 
-        matrixstack.pushPose();
+        poseStack.pushPose();
         //float ff = 93.75F/16f;
-        //matrixstack.scale(ff,ff,ff);
+        //poseStack.scale(ff,ff,ff);
         int ut = -1;
         int vt = -1;
         for (int xx = 0; xx < 16; xx++) {
@@ -130,14 +130,14 @@ public class CarvingGui extends Screen {
                     vt = yy;
                 }
                 this.buttons[xx][yy].setMaterial(materials[xx][yy]);
-                this.buttons[xx][yy].render(matrixstack, mouseX, mouseY, partialTicks);
+                this.buttons[xx][yy].render(poseStack, mouseX, mouseY, partialTicks);
             }
         }
-        if (ut != -1) this.buttons[ut][vt].renderTooltip(matrixstack);
-        matrixstack.popPose();
+        if (ut != -1) this.buttons[ut][vt].renderTooltip(poseStack);
+        poseStack.popPose();
 
         Lighting.setupFor3DItems();
-        super.render(matrixstack, mouseX, mouseY, partialTicks);
+        super.render(poseStack, mouseX, mouseY, partialTicks);
     }
 }
 

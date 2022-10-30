@@ -5,7 +5,7 @@ import com.mojang.math.Transformation;
 import com.mojang.math.Vector3f;
 import net.mehvahdjukaar.harvestseason.blocks.ModCarvedPumpkinBlock;
 import net.mehvahdjukaar.harvestseason.blocks.ModCarvedPumpkinBlockTile;
-import net.mehvahdjukaar.harvestseason.reg.ModRegistry;
+import net.mehvahdjukaar.harvestseason.reg.ClientRegistry;
 import net.mehvahdjukaar.moonlight.api.client.model.BakedQuadBuilder;
 import net.mehvahdjukaar.moonlight.api.client.model.CustomBakedModel;
 import net.mehvahdjukaar.moonlight.api.client.model.ExtraModelData;
@@ -82,21 +82,20 @@ public class CarvedPumpkinBakedModel implements CustomBakedModel {
     public List<BakedQuad> getBlockQuads(BlockState state, Direction side, RandomSource rand, RenderType renderType,
                                          ExtraModelData data) {
         List<BakedQuad> quads = new ArrayList<>(back.getQuads(state, side, rand));
-        if (data != ExtraModelData.EMPTY && state != null && side == null) {
-            Direction dir = state.getValue(ModCarvedPumpkinBlock.FACING);
+        if (data != ExtraModelData.EMPTY && state != null && side == state.getValue(ModCarvedPumpkinBlock.FACING)) {
             CarvingManager.CarvingKey key = data.get(ModCarvedPumpkinBlockTile.CARVING);
             if (key != null) {
                 var textureInstance = CarvingManager.getCarvingInstance(key);
-                quads.addAll(textureInstance.getOrCreateModel(dir, () ->
-                        generateQuads(textureInstance.getPixels(), this.modelTransform, textureInstance.isGlow())));
+                quads.addAll(textureInstance.getOrCreateModel(side, () ->
+                        generateQuads(textureInstance.getPixels(), this.modelTransform, textureInstance.isGlow(), side)));
             }
         }
 
         return quads;
     }
 
-    private List<BakedQuad> generateQuads(boolean[][] px, ModelState modelTransform, boolean jackOLantern) {
-        Material[][] pixels = PumpkinTextureGenerator.getTexturePerPixel(px, true);
+    private List<BakedQuad> generateQuads(boolean[][] px, ModelState modelTransform, boolean jackOLantern, Direction direction) {
+        Material[][] pixels = PumpkinTextureGenerator.getTexturePerPixel(px, jackOLantern);
         List<BakedQuad> quads;
         quads = new ArrayList<>();
         var rotation = modelTransform.getRotation();
@@ -117,10 +116,11 @@ public class CarvedPumpkinBakedModel implements CustomBakedModel {
                 }
                 //block uv is incorrectly flipped on both axis... too bad
                 //draws prev quad
-                int tint = NativeImage.combine(255, 255, 255, 255);//255 << 24;
+                int tint = -1;//255 << 24;
                 TextureAtlasSprite sprite = spriteGetter.apply(prevColor);
+
                 quads.add(createPixelQuad((15 - x) / 16f, (16 - length - startY) / 16f, 0,
-                        1 / 16f, length / 16f, sprite, tint, rotation, false));
+                        1 / 16f, length / 16f, sprite, tint, rotation, false, direction));
                 startY = y;
                 if (current != null) {
                     prevColor = current;
@@ -134,17 +134,24 @@ public class CarvedPumpkinBakedModel implements CustomBakedModel {
 
     public static BakedQuad createPixelQuad(float x, float y, float z, float width, float height,
                                             TextureAtlasSprite sprite, int color, Transformation transform,
-                                            boolean litUp) {
-        Vector3f normal = new Vector3f(0, 0, 1);
-
-        BakedQuadBuilder builder = BakedQuadBuilder.create();
+                                            boolean litUp, Direction dd) {
 
         float tu = (1 - (1 + sprite.getWidth() * width));
         float tv = (1 - (1 + sprite.getHeight() * height));
         float u0 = (1 - x) * 16;
         float v0 = (1 - y) * 16;
 
-        builder.setDirection(Direction.getNearest(normal.x(), normal.y(), normal.z()));
+        BakedQuadBuilder builder = BakedQuadBuilder.create(null);
+
+        if (x == 4 / 16f || x == 11 / 16f) {
+
+        }
+
+        builder.setDirection(dd);
+        Vector3f normal = new Vector3f();
+        normal.set(dd.getStepX(), dd.getStepY(), dd.getStepZ());
+
+        // normal = new Vector3f(0, 0, 1);
         builder.setSprite(sprite);
 
         putVertex(builder, normal, x + width, y + height, z,
@@ -156,7 +163,24 @@ public class CarvedPumpkinBakedModel implements CustomBakedModel {
         putVertex(builder, normal, x, y + height, z,
                 u0, v0 + tv, sprite, color, transform, litUp);
 
+
         return builder.build();
+    }
+
+    private static void putVertex(BakedQuadBuilder builder, Vector3f normal,
+                                  float x, float y, float z, float u, float v,
+                                  TextureAtlasSprite sprite, int color, boolean emissive) {
+        builder.pos(x, y, z);
+
+        builder.color(color);
+
+        builder.uv(sprite.getU(u), sprite.getV(v));
+
+        builder.normal(normal.x(), normal.y(), normal.z());
+
+        if (emissive) builder.lightEmission(15);
+
+        builder.endVertex();
     }
 
     private static void putVertex(BakedQuadBuilder builder, Vector3f normal,

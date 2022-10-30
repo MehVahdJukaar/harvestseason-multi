@@ -44,7 +44,7 @@ public class ClientRegistry {
 
     @EventCalled
     private static void registerBlockEntityRenderers(ClientPlatformHelper.BlockEntityRendererEvent event) {
-        event.register(net.mehvahdjukaar.harvestseason.reg.ModRegistry.MOD_CARVED_PUMPKIN_TILE.get(), CarvedPumpkinTileRenderer::new);
+        event.register(ModRegistry.MOD_CARVED_PUMPKIN_TILE.get(), CarvedPumpkinTileRenderer::new);
     }
 
     @EventCalled

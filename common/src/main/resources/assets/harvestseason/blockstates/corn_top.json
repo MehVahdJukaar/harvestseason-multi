@@ -1,0 +1,10 @@
+{
+  "variants": {
+    "age=0": {
+      "model": "harvestseason:block/corn_top_0"
+    },
+    "age=1": {
+      "model": "harvestseason:block/corn_top_1"
+    }
+  }
+}

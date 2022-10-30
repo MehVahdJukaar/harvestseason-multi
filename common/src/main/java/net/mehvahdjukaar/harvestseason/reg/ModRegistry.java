@@ -4,13 +4,18 @@ import net.mehvahdjukaar.harvestseason.HarvestSeason;
 import net.mehvahdjukaar.harvestseason.blocks.CornBaseBlock;
 import net.mehvahdjukaar.harvestseason.blocks.ModCarvedPumpkinBlock;
 import net.mehvahdjukaar.harvestseason.blocks.ModCarvedPumpkinBlockTile;
+import net.mehvahdjukaar.harvestseason.items.crafting.PumpkinDuplicateRecipe;
 import net.mehvahdjukaar.moonlight.api.item.WoodBasedBlockItem;
 import net.mehvahdjukaar.moonlight.api.platform.PlatformHelper;
 import net.mehvahdjukaar.moonlight.api.platform.RegHelper;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.CreativeModeTab;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemNameBlockItem;
+import net.minecraft.world.item.crafting.Recipe;
+import net.minecraft.world.item.crafting.RecipeSerializer;
+import net.minecraft.world.item.crafting.SimpleRecipeSerializer;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.SoundType;
@@ -18,6 +23,7 @@ import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockBehaviour;
 
+import java.util.function.Function;
 import java.util.function.Supplier;
 
 @SuppressWarnings({"unused"})
@@ -27,6 +33,9 @@ public class ModRegistry {
     public static void init() {
     }
 
+
+    public static final Supplier<RecipeSerializer<PumpkinDuplicateRecipe>> PUMPKIN_DUPLICATE_RECIPE = regRecipe(
+            "carved_pumpkin_duplicate", PumpkinDuplicateRecipe::new);
 
     public static final Supplier<Block> CORN_BASE = regBlock("corn_base", () -> new CornBaseBlock(
             BlockBehaviour.Properties.copy(Blocks.ROSE_BUSH)
@@ -55,7 +64,8 @@ public class ModRegistry {
             CreativeModeTab.TAB_DECORATIONS);
 
     public static final Supplier<Block> MOD_JACK_O_LANTERN = regWithItem("jack_o_lantern",
-            () -> new ModCarvedPumpkinBlock(BlockBehaviour.Properties.copy(Blocks.CARVED_PUMPKIN)),
+            () -> new ModCarvedPumpkinBlock(BlockBehaviour.Properties.copy(Blocks.CARVED_PUMPKIN)
+                    .lightLevel(s -> 15)),
             CreativeModeTab.TAB_DECORATIONS);
 
     public static final Supplier<BlockEntityType<ModCarvedPumpkinBlockTile>> MOD_CARVED_PUMPKIN_TILE =
@@ -103,6 +113,10 @@ public class ModRegistry {
     public static Supplier<BlockItem> regBlockItem(String name, Supplier<? extends Block> blockSup, Item.Properties properties, int burnTime) {
         return RegHelper.registerItem(HarvestSeason.res(name), () -> burnTime == 0 ? new BlockItem(blockSup.get(), properties) :
                 new WoodBasedBlockItem(blockSup.get(), properties, burnTime));
+    }
+
+    private static <T extends Recipe<?>> Supplier<RecipeSerializer<T>> regRecipe(String name, Function<ResourceLocation, T> factory) {
+        return RegHelper.registerRecipeSerializer(HarvestSeason.res(name), () -> new SimpleRecipeSerializer<>(factory));
     }
 
 }

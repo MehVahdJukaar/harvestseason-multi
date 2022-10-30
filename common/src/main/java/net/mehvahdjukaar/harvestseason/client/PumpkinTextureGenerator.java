@@ -1,13 +1,11 @@
 package net.mehvahdjukaar.harvestseason.client;
 
-import com.google.common.hash.HashCode;
 import com.mojang.datafixers.util.Pair;
 import net.mehvahdjukaar.harvestseason.reg.ClientRegistry;
 import net.minecraft.client.resources.model.Material;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Random;
 import java.util.function.BiConsumer;
 
 public class PumpkinTextureGenerator {
@@ -30,16 +28,15 @@ public class PumpkinTextureGenerator {
                 }
             }
         });
-        forEachPixel(colors, (j, i) -> {
-            addExtraShade(colors, j, i);
-        });
+
+        addExtraShade(colors);
         forEachPixel(colors, (j, i) -> {
             addHighlight(colors, j, i);
         });
         Material[][] materials = new Material[16][16];
-        if(jackOLantern){
+        if (jackOLantern) {
             mapJackOLanternMaterials(colors, materials);
-        }else {
+        } else {
             mapCarvedMaterials(colors, materials);
         }
         return materials;
@@ -65,32 +62,34 @@ public class PumpkinTextureGenerator {
         );
     }
 
-    private static void addExtraShade(Type[][] px, int j, int i) {
-        List<Pair<Integer,Integer>> shades = new ArrayList<>();
-        if ( !isUnCarved(px, j, i)) {
-            //Up
-            if (isShaded(px, j, i - 1)) {
-                //sides
-                if (isShaded(px, j - 1, i) && isShaded(px, j + 1, i)) {
-                    if (isShaded(px, j - 1, i + 1) || isShaded(px, j + 1, i + 1)) {
-                        shades.add(Pair.of(j,i));
+    private static void addExtraShade(Type[][] px) {
+        List<Pair<Integer, Integer>> shades = new ArrayList<>();
+        forEachPixel(px, (j, i) -> {
+            if (!isUnCarved(px, j, i)) {
+                //Up
+                if (isShaded(px, j, i - 1)) {
+                    //sides
+                    if (isShaded(px, j - 1, i) && isShaded(px, j + 1, i)) {
+                        if (isShaded(px, j - 1, i + 1) || isShaded(px, j + 1, i + 1)) {
+                            shades.add(Pair.of(j, i));
+                        }
                     }
-                }
-                if (isShaded(px, j, i + 1)) {
-                    if (isShaded(px, j + 1, i - 1) && isShaded(px, j - 1, i) ||
-                            isShaded(px, j - 1, i - 1) && isShaded(px, j + 1, i)) {
-                        shades.add(Pair.of(j,i));
+                    if (isShaded(px, j, i + 1)) {
+                        if (isShaded(px, j + 1, i - 1) && isShaded(px, j - 1, i) ||
+                                isShaded(px, j - 1, i - 1) && isShaded(px, j + 1, i)) {
+                            shades.add(Pair.of(j, i));
+                        }
                     }
                 }
             }
-        }
-        shades.forEach(p->px[p.getFirst()][p.getSecond()] = Type.SHADE);
+        });
+        shades.forEach(p -> px[p.getFirst()][p.getSecond()] = Type.SHADE);
     }
 
 
     private static void addHighlight(Type[][] px, int j, int i) {
         if (isUnCarved(px, j, i)) {
-            if(!isUnCarved(px, j-1, i)  || (!isUnCarved(px, j, i-1))){
+            if (!isUnCarved(px, j - 1, i) || (!isUnCarved(px, j, i - 1))) {
                 px[j][i] = Type.HIGHLIGHT;
             }
         }
@@ -103,7 +102,7 @@ public class PumpkinTextureGenerator {
     private static boolean isUnCarved(Type[][] px, int j, int i) {
         if (j < 0 || i < 0 || j > 15 || i > 15) return true;
         var t = px[j][i];
-        return  t == Type.UNCARVED || t == Type.HIGHLIGHT;
+        return t == Type.UNCARVED || t == Type.HIGHLIGHT;
     }
 
     private static boolean isShaded(Type[][] px, int j, int i) {
