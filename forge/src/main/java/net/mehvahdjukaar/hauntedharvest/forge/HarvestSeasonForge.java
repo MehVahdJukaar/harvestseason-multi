@@ -3,8 +3,11 @@ package net.mehvahdjukaar.hauntedharvest.forge;
 import net.mehvahdjukaar.harvestseason.HarvestSeason;
 import net.mehvahdjukaar.harvestseason.reg.ClientRegistry;
 import net.mehvahdjukaar.moonlight.api.platform.PlatformHelper;
+import net.minecraft.world.InteractionResult;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.TagsUpdatedEvent;
+import net.minecraftforge.event.entity.player.PlayerInteractEvent;
+import net.minecraftforge.eventbus.api.EventPriority;
 import net.minecraftforge.eventbus.api.IEventBus;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
@@ -40,4 +43,16 @@ public class HarvestSeasonForge {
     public static void onTagLoad(TagsUpdatedEvent event) {
 
     }
+
+    @SubscribeEvent(priority = EventPriority.HIGH)
+    public void onUseBlock(PlayerInteractEvent.RightClickBlock event) {
+        if (!event.isCanceled()) {
+            var ret = HarvestSeason.onRightClickBlock(event.getEntity(), event.getLevel(), event.getHand(), event.getHitVec());
+            if (ret != InteractionResult.PASS) {
+                event.setCanceled(true);
+                event.setCancellationResult(ret);
+            }
+        }
+    }
+
 }

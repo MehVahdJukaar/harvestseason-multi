@@ -1,11 +1,9 @@
 package net.mehvahdjukaar.harvestseason.client;
 
-import com.mojang.blaze3d.platform.NativeImage;
 import com.mojang.math.Transformation;
 import com.mojang.math.Vector3f;
 import net.mehvahdjukaar.harvestseason.blocks.ModCarvedPumpkinBlock;
 import net.mehvahdjukaar.harvestseason.blocks.ModCarvedPumpkinBlockTile;
-import net.mehvahdjukaar.harvestseason.reg.ClientRegistry;
 import net.mehvahdjukaar.moonlight.api.client.model.BakedQuadBuilder;
 import net.mehvahdjukaar.moonlight.api.client.model.CustomBakedModel;
 import net.mehvahdjukaar.moonlight.api.client.model.ExtraModelData;
@@ -83,9 +81,9 @@ public class CarvedPumpkinBakedModel implements CustomBakedModel {
                                          ExtraModelData data) {
         List<BakedQuad> quads = new ArrayList<>(back.getQuads(state, side, rand));
         if (data != ExtraModelData.EMPTY && state != null && side == state.getValue(ModCarvedPumpkinBlock.FACING)) {
-            CarvingManager.CarvingKey key = data.get(ModCarvedPumpkinBlockTile.CARVING);
+            CarvingManager.Key key = data.get(ModCarvedPumpkinBlockTile.CARVING);
             if (key != null) {
-                var textureInstance = CarvingManager.getCarvingInstance(key);
+                var textureInstance = CarvingManager.getInstance(key);
                 quads.addAll(textureInstance.getOrCreateModel(side, () ->
                         generateQuads(textureInstance.getPixels(), this.modelTransform, textureInstance.isGlow(), side)));
             }
@@ -114,9 +112,8 @@ public class CarvedPumpkinBakedModel implements CustomBakedModel {
                     }
                     current = b;
                 }
-                //block uv is incorrectly flipped on both axis... too bad
                 //draws prev quad
-                int tint = -1;//255 << 24;
+                int tint = -1;
                 TextureAtlasSprite sprite = spriteGetter.apply(prevColor);
 
                 quads.add(createPixelQuad((15 - x) / 16f, (16 - length - startY) / 16f, 0,
@@ -144,15 +141,9 @@ public class CarvedPumpkinBakedModel implements CustomBakedModel {
         //this just wraps around forge baked quad builder
         BakedQuadBuilder builder = BakedQuadBuilder.create();
 
-        if (x == 4 / 16f || x == 11 / 16f) {
-            //buggy quads on west and east
-        }
-
         builder.setDirection(dd);
-        Vector3f normal = new Vector3f();
-        normal.set(dd.getStepX(), dd.getStepY(), dd.getStepZ());
+        Vector3f normal = new Vector3f(dd.getStepX(), dd.getStepY(), dd.getStepZ());
 
-        // normal = new Vector3f(0, 0, 1);
         builder.setSprite(sprite);
 
         putVertex(builder, normal, x + width, y + height, z,
@@ -168,21 +159,6 @@ public class CarvedPumpkinBakedModel implements CustomBakedModel {
         return builder.build();
     }
 
-    private static void putVertex(BakedQuadBuilder builder, Vector3f normal,
-                                  float x, float y, float z, float u, float v,
-                                  TextureAtlasSprite sprite, int color, boolean emissive) {
-        builder.pos(x, y, z);
-
-        builder.color(color);
-
-        builder.uv(sprite.getU(u), sprite.getV(v));
-
-        builder.normal(normal.x(), normal.y(), normal.z());
-
-        if (emissive) builder.lightEmission(15);
-
-        builder.endVertex();
-    }
 
     private static void putVertex(BakedQuadBuilder builder, Vector3f normal,
                                   float x, float y, float z, float u, float v,
@@ -190,6 +166,8 @@ public class CarvedPumpkinBakedModel implements CustomBakedModel {
                                   Transformation transformation, boolean emissive) {
 
         Vector3f posV = RotHlpr.rotateVertexOnCenterBy(x, y, z, transformation.getMatrix());
+        //I hate this. Forge seems to have some rounding errors with numbers close to 0 that arent 0 resulting in incorrect shading
+        posV.set(Math.round(posV.x() * 16) / 16f, Math.round(posV.y() * 16) / 16f, Math.round(posV.z() * 16) / 16f);
 
         builder.pos(posV);
 

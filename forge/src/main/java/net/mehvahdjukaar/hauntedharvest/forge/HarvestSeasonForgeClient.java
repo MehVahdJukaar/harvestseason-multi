@@ -1,6 +1,7 @@
 package net.mehvahdjukaar.hauntedharvest.forge;
 
 import net.mehvahdjukaar.harvestseason.HarvestSeason;
+import net.mehvahdjukaar.harvestseason.reg.ClientRegistry;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
@@ -13,7 +14,7 @@ public class HarvestSeasonForgeClient {
     @SubscribeEvent
     public static void init(final FMLClientSetupEvent event) {
         event.enqueueWork(() -> {
-            //ClientRegistry.setup();
+            ClientRegistry.setup();
 
         });
     }

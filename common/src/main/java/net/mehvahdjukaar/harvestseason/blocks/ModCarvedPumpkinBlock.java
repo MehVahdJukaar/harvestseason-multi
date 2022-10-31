@@ -1,12 +1,14 @@
 package net.mehvahdjukaar.harvestseason.blocks;
 
-import com.google.common.collect.ImmutableMap;
 import com.mojang.datafixers.util.Pair;
 import net.mehvahdjukaar.harvestseason.reg.ModConfigs;
+import net.mehvahdjukaar.harvestseason.reg.ModRegistry;
 import net.minecraft.advancements.CriteriaTriggers;
 import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.sounds.SoundEvents;
+import net.minecraft.sounds.SoundSource;
 import net.minecraft.util.Mth;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
@@ -14,23 +16,21 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.HoneycombItem;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.Items;
 import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.Level;
-import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.CarvedPumpkinBlock;
-import net.minecraft.world.level.block.DiodeBlock;
 import net.minecraft.world.level.block.EntityBlock;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.Vec3;
-import net.minecraft.world.phys.shapes.CollisionContext;
-import net.minecraft.world.phys.shapes.VoxelShape;
 
 import javax.annotation.Nullable;
-import java.util.function.Function;
 
 public class ModCarvedPumpkinBlock extends CarvedPumpkinBlock implements EntityBlock {
+
+
 
     public ModCarvedPumpkinBlock(Properties properties) {
         super(properties);
@@ -61,14 +61,28 @@ public class ModCarvedPumpkinBlock extends CarvedPumpkinBlock implements EntityB
             Item i = stack.getItem();
             if (i instanceof HoneycombItem) {
                 if (player instanceof ServerPlayer serverPlayer) {
-                    CriteriaTriggers.ITEM_USED_ON_BLOCK.trigger( serverPlayer, pos, stack);
+                    CriteriaTriggers.ITEM_USED_ON_BLOCK.trigger(serverPlayer, pos, stack);
                 }
                 if (!player.isCreative()) {
                     stack.shrink(1);
                 }
-                //TODO use better particles shape
                 level.levelEvent(player, 3003, pos, 0);
                 te.setWaxed(true);
+                return InteractionResult.sidedSuccess(level.isClientSide);
+            } else if (!te.isJackOLantern() && i == Items.TORCH) {
+                if (player instanceof ServerPlayer serverPlayer) {
+                    CriteriaTriggers.ITEM_USED_ON_BLOCK.trigger(serverPlayer, pos, stack);
+                }
+                if (!player.isCreative()) {
+                    stack.shrink(1);
+                }
+                CompoundTag tag = new CompoundTag();
+                te.saveAdditional(tag);
+                level.playSound(null, pos, SoundEvents.WOOD_PLACE, SoundSource.PLAYERS, 1, 1.3f);
+                level.setBlockAndUpdate(pos, ModRegistry.MOD_JACK_O_LANTERN.get().withPropertiesOf(state));
+                if (level.getBlockEntity(pos) instanceof ModCarvedPumpkinBlockTile jack) {
+                    jack.load(tag);
+                }
                 return InteractionResult.sidedSuccess(level.isClientSide);
             }
 

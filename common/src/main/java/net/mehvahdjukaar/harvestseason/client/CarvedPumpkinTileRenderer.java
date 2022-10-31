@@ -52,7 +52,6 @@ public class CarvedPumpkinTileRenderer implements BlockEntityRenderer<ModCarvedP
     public void render(ModCarvedPumpkinBlockTile tile, float partialTicks, PoseStack matrixStackIn, MultiBufferSource bufferIn, int combinedLightIn,
                        int combinedOverlayIn) {
 
-        if(true)return;
         if (!ModConfigs.CARVE_MODE.get().canManualDraw()) return;
 
         Direction dir = tile.getDirection();
@@ -99,12 +98,15 @@ public class CarvedPumpkinTileRenderer implements BlockEntityRenderer<ModCarvedP
                 }
             }
         }
-
-
-
     }
 
-
+    public static void addQuadSide(VertexConsumer builder, PoseStack matrixStackIn, float x0, float y0, float z0, float x1, float y1, float z1, float u0, float v0, float u1, float v1, float r, float g,
+                                   float b, float a, int lu, int lv, float nx, float ny, float nz) {
+        addVert(builder, matrixStackIn, x0, y0, z0, u0, v1, r, g, b, a, lu, lv, nx, ny, nz);
+        addVert(builder, matrixStackIn, x1, y0, z1, u1, v1, r, g, b, a, lu, lv, nx, ny, nz);
+        addVert(builder, matrixStackIn, x1, y1, z1, u1, v0, r, g, b, a, lu, lv, nx, ny, nz);
+        addVert(builder, matrixStackIn, x0, y1, z0, u0, v0, r, g, b, a, lu, lv, nx, ny, nz);
+    }
     public static void addQuadSide(VertexConsumer builder, PoseStack matrixStackIn, float x0, float y0, float z0, float x1, float y1, float z1, float u0, float v0, float u1, float v1, float r, float g,
                                    float b, float a, int lu, int lv, float nx, float ny, float nz, TextureAtlasSprite sprite) {
 

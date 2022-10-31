@@ -1,7 +1,7 @@
 package net.mehvahdjukaar.harvestseason.blocks;
 
 import net.mehvahdjukaar.harvestseason.client.CarvingGui;
-import net.mehvahdjukaar.harvestseason.client.CarvingManager.CarvingKey;
+import net.mehvahdjukaar.harvestseason.client.CarvingManager.Key;
 import net.mehvahdjukaar.harvestseason.reg.ModRegistry;
 import net.mehvahdjukaar.moonlight.api.block.IOwnerProtected;
 import net.mehvahdjukaar.moonlight.api.client.IScreenProvider;
@@ -23,7 +23,7 @@ import java.util.UUID;
 public class ModCarvedPumpkinBlockTile extends BlockEntity implements IOwnerProtected,
         IScreenProvider, IExtraModelDataProvider {
 
-    public static final ModelDataKey<CarvingKey> CARVING = new ModelDataKey<>(CarvingKey.class);
+    public static final ModelDataKey<Key> CARVING = new ModelDataKey<>(Key.class);
 
     private final boolean isJackOLantern;
 
@@ -32,7 +32,7 @@ public class ModCarvedPumpkinBlockTile extends BlockEntity implements IOwnerProt
     private boolean[][] pixels = new boolean[16][16];
 
     //client side
-    private CarvingKey textureKey = null;
+    private Key textureKey = null;
 
     public ModCarvedPumpkinBlockTile(BlockPos pos, BlockState state) {
         super(ModRegistry.MOD_CARVED_PUMPKIN_TILE.get(), pos, state);
@@ -51,13 +51,13 @@ public class ModCarvedPumpkinBlockTile extends BlockEntity implements IOwnerProt
                 .build();
     }
 
-    public CarvingKey getTextureKey() {
+    public Key getTextureKey() {
         if (textureKey == null) refreshTextureKey();
         return textureKey;
     }
 
     public void refreshTextureKey() {
-        this.textureKey = CarvingKey.of(packPixels(this.pixels), this.isJackOLantern);
+        this.textureKey = Key.of(packPixels(this.pixels), this.isJackOLantern);
     }
 
     @Override
@@ -77,8 +77,16 @@ public class ModCarvedPumpkinBlockTile extends BlockEntity implements IOwnerProt
     @Override
     public void load(CompoundTag compound) {
         super.load(compound);
-        loadFromTag(compound);
         this.loadOwner(compound);
+        loadPixels(compound);
+    }
+
+    public void loadPixels(CompoundTag compound) {
+        this.waxed = compound.contains("Waxed") && compound.getBoolean("Waxed");
+        this.pixels = new boolean[16][16];
+        if (compound.contains("Pixels")) {
+            this.pixels = unpackPixels(compound.getLongArray("Pixels"));
+        }
     }
 
     @Override
@@ -93,15 +101,6 @@ public class ModCarvedPumpkinBlockTile extends BlockEntity implements IOwnerProt
         compound.putLongArray("Pixels", packPixels(pixels));
         return compound;
     }
-
-    public void loadFromTag(CompoundTag compound) {
-        this.waxed = compound.contains("Waxed") && compound.getBoolean("Waxed");
-        this.pixels = new boolean[16][16];
-        if (compound.contains("Pixels")) {
-            this.pixels = unpackPixels(compound.getLongArray("Pixels"));
-        }
-    }
-
 
     public static long[] packPixels(boolean[][] pixels) {
         long[] packed = new long[4];

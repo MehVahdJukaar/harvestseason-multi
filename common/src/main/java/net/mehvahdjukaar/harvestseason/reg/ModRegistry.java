@@ -1,9 +1,9 @@
 package net.mehvahdjukaar.harvestseason.reg;
 
 import net.mehvahdjukaar.harvestseason.HarvestSeason;
-import net.mehvahdjukaar.harvestseason.blocks.CornBaseBlock;
-import net.mehvahdjukaar.harvestseason.blocks.ModCarvedPumpkinBlock;
-import net.mehvahdjukaar.harvestseason.blocks.ModCarvedPumpkinBlockTile;
+import net.mehvahdjukaar.harvestseason.blocks.*;
+import net.mehvahdjukaar.harvestseason.items.ModCarvedPumpkinItem;
+import net.mehvahdjukaar.harvestseason.items.crafting.JackOLanternRecipe;
 import net.mehvahdjukaar.harvestseason.items.crafting.PumpkinDuplicateRecipe;
 import net.mehvahdjukaar.moonlight.api.item.WoodBasedBlockItem;
 import net.mehvahdjukaar.moonlight.api.platform.PlatformHelper;
@@ -37,36 +37,62 @@ public class ModRegistry {
     public static final Supplier<RecipeSerializer<PumpkinDuplicateRecipe>> PUMPKIN_DUPLICATE_RECIPE = regRecipe(
             "carved_pumpkin_duplicate", PumpkinDuplicateRecipe::new);
 
+    public static final Supplier<RecipeSerializer<JackOLanternRecipe>> JACK_O_LANTERN_RECIPE = regRecipe(
+            "jack_o_lantern", JackOLanternRecipe::new);
+
     public static final Supplier<Block> CORN_BASE = regBlock("corn_base", () -> new CornBaseBlock(
             BlockBehaviour.Properties.copy(Blocks.ROSE_BUSH)
                     .randomTicks()
+                    .offsetType(BlockBehaviour.OffsetType.NONE)
                     .instabreak()
                     .sound(SoundType.CROP))
     );
 
-    public static final Supplier<Block> CORN_MIDDLE = regBlock("corn_midle", () -> new CornBaseBlock(
+    public static final Supplier<Block> CORN_MIDDLE = regBlock("corn_midle", () -> new CornMiddleBlock(
             BlockBehaviour.Properties.copy(CORN_BASE.get()))
     );
 
-    public static final Supplier<Block> CORN_TOP = regBlock("corn_top", () -> new CornBaseBlock(
+    public static final Supplier<Block> CORN_TOP = regBlock("corn_top", () -> new CornTobBlock(
             BlockBehaviour.Properties.copy(CORN_BASE.get()))
     );
 
-    public static final Supplier<Item> COB_ITEM = regItem("cob", () -> new Item(
-            (new Item.Properties()).tab(CreativeModeTab.TAB_DECORATIONS)));
+    public static final Supplier<Item> COB_ITEM = regItem("corn", () -> new Item(
+            (new Item.Properties()).tab(CreativeModeTab.TAB_MISC)));
 
-    public static final Supplier<Item> CORN_SEEDS = regItem("corn_seeds", () -> new ItemNameBlockItem(CORN_BASE.get(),
+    public static final Supplier<Item> COOKED_COB = regItem("corn_on_the_cob", () -> new Item(
+            (new Item.Properties()).tab(CreativeModeTab.TAB_FOOD)));
+
+    public static final Supplier<Item> POP_CORN = regItem("popcorn", () -> new Item(
+            (new Item.Properties()).tab(CreativeModeTab.TAB_FOOD)));
+
+    public static final Supplier<Item> CANDY_CORN = regItem("candy_corn", () -> new Item(
+            (new Item.Properties()).tab(CreativeModeTab.TAB_FOOD)));
+
+
+    public static final Supplier<Block> PAPER_BAG = regWithItem("paper_bag", () -> new PaperBagBlock(
+            BlockBehaviour.Properties.copy(Blocks.WHITE_WOOL)), CreativeModeTab.TAB_MISC);
+
+    public static final Supplier<Block> CANDY_BAG = regBlock("candy_bag", () -> new CandyBagBlock(
+            BlockBehaviour.Properties.copy(Blocks.WHITE_WOOL)));
+
+    public static final Supplier<Item> CORN_SEEDS = regItem("kernels", () -> new ItemNameBlockItem(CORN_BASE.get(),
             (new Item.Properties()).tab(CreativeModeTab.TAB_MISC)));
 
 
-    public static final Supplier<Block> MOD_CARVED_PUMPKIN = regWithItem("carved_pumpkin",
-            () -> new ModCarvedPumpkinBlock(BlockBehaviour.Properties.copy(Blocks.CARVED_PUMPKIN)),
-            CreativeModeTab.TAB_DECORATIONS);
+    public static final Supplier<Block> MOD_CARVED_PUMPKIN = regBlock("carved_pumpkin",
+            () -> new ModCarvedPumpkinBlock(BlockBehaviour.Properties.copy(Blocks.CARVED_PUMPKIN)));
 
-    public static final Supplier<Block> MOD_JACK_O_LANTERN = regWithItem("jack_o_lantern",
+    public static final Supplier<Item> MOD_CARVED_PUMPKIN_ITEM = regItem("carved_pumpkin",
+            () -> new ModCarvedPumpkinItem(MOD_CARVED_PUMPKIN.get(), new Item.Properties().tab(CreativeModeTab.TAB_DECORATIONS)));
+
+
+    public static final Supplier<Block> MOD_JACK_O_LANTERN = regBlock("jack_o_lantern",
             () -> new ModCarvedPumpkinBlock(BlockBehaviour.Properties.copy(Blocks.CARVED_PUMPKIN)
-                    .lightLevel(s -> 15)),
-            CreativeModeTab.TAB_DECORATIONS);
+                    .lightLevel(s -> 15)));
+
+    public static final Supplier<Item> MOD_JACK_O_LANTERN_ITEM = regItem("jack_o_lantern",
+            () -> new ModCarvedPumpkinItem(MOD_JACK_O_LANTERN.get(), new Item.Properties().tab(CreativeModeTab.TAB_DECORATIONS)));
+
 
     public static final Supplier<BlockEntityType<ModCarvedPumpkinBlockTile>> MOD_CARVED_PUMPKIN_TILE =
             regTile("carved_pumpkin", () ->

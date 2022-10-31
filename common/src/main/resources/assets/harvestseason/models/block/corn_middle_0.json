@@ -1,6 +1,6 @@
 {
   "parent": "harvestseason:block/crop_cross",
   "textures": {
-    "cross": "harvestseason:blocks/corn_middle_0"
+    "cross": "harvestseason:block/corn_middle_0"
   }
 }

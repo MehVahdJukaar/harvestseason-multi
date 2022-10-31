@@ -15,8 +15,10 @@ import net.minecraft.client.renderer.block.model.BakedQuad;
 import net.minecraft.client.renderer.texture.DynamicTexture;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.client.renderer.texture.TextureManager;
+import net.minecraft.client.resources.model.Material;
 import net.minecraft.core.Direction;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.inventory.tooltip.TooltipComponent;
 import org.jetbrains.annotations.Nullable;
 
 import javax.annotation.Nonnull;
@@ -32,46 +34,46 @@ public class CarvingManager {
 
     private static final TextureManager TEXTURE_MANAGER = Minecraft.getInstance().getTextureManager();
 
-    private static final LoadingCache<CarvingKey, TextureInstance> TEXTURE_CACHE = CacheBuilder.newBuilder()
+    private static final LoadingCache<Key, Carving> TEXTURE_CACHE = CacheBuilder.newBuilder()
             .expireAfterAccess(2, TimeUnit.MINUTES)
             .removalListener(i -> {
-                TextureInstance value = (TextureInstance) i.getValue();
+                Carving value = (Carving) i.getValue();
                 if (value != null) {
                     RenderSystem.recordRenderCall(value::close);
                 }
             })
             .build(new CacheLoader<>() {
                 @Override
-                public TextureInstance load(CarvingKey key) {
+                public Carving load(Key key) {
                     return null;
                 }
             });
 
-    public static TextureInstance getCarvingInstance(CarvingKey key) {
-        TextureInstance textureInstance = TEXTURE_CACHE.getIfPresent(key);
+    public static Carving getInstance(Key key) {
+        Carving textureInstance = TEXTURE_CACHE.getIfPresent(key);
         if (textureInstance == null) {
-            textureInstance = new TextureInstance(ModCarvedPumpkinBlockTile.unpackPixels(key.values), key.glow);
+            textureInstance = new Carving(ModCarvedPumpkinBlockTile.unpackPixels(key.values), key.glow);
             TEXTURE_CACHE.put(key, textureInstance);
         }
         return textureInstance;
     }
 
     @Immutable
-    public static class CarvingKey {
+    public static class Key implements TooltipComponent {
         private final long[] values;
         private final boolean glow;
 
-        CarvingKey(long[] packed, boolean glowing) {
+        Key(long[] packed, boolean glowing) {
             values = packed;
             glow = glowing;
         }
 
-        public static CarvingKey of(long[] packPixels, boolean glowing) {
-            return new CarvingKey(packPixels, glowing);
+        public static Key of(long[] packPixels, boolean glowing) {
+            return new Key(packPixels, glowing);
         }
 
-        public static CarvingKey of(long[] packPixels) {
-            return new CarvingKey(packPixels, false);
+        public static Key of(long[] packPixels) {
+            return new Key(packPixels, false);
         }
 
         @Override
@@ -85,7 +87,7 @@ public class CarvingManager {
             if (another.getClass() != this.getClass()) {
                 return false;
             }
-            CarvingKey key = (CarvingKey) another;
+            Key key = (Key) another;
             return Arrays.equals(this.values, key.values) && glow == key.glow;
         }
 
@@ -96,7 +98,7 @@ public class CarvingManager {
     }
 
 
-    public static class TextureInstance implements AutoCloseable {
+    public static class Carving implements AutoCloseable {
         private static final int WIDTH = 16;
 
         //models for each direction
@@ -111,7 +113,7 @@ public class CarvingManager {
         @Nullable
         private ResourceLocation textureLocation;
 
-        private TextureInstance(boolean[][] pixels, boolean glow) {
+        private Carving(boolean[][] pixels, boolean glow) {
             this.pixels = pixels;
             this.glow = glow;
         }
@@ -129,9 +131,13 @@ public class CarvingManager {
         private void initializeTexture() {
             this.texture = new DynamicTexture(WIDTH, WIDTH, false);
 
+            Material[][] materials = PumpkinTextureGenerator.getTexturePerPixel(this.pixels, this.glow);
+
             for (int y = 0; y < pixels.length && y < WIDTH; y++) {
                 for (int x = 0; x < pixels[y].length && x < WIDTH; x++) { //getColoredPixel(BlackboardBlock.colorFromByte(pixels[x][y]),x,y)
-                    this.texture.getPixels().setPixelRGBA(x, y, getColoredPixel(pixels[x][y], x, y));
+                   int c = ClientPlatformHelper.getPixelRGBA(materials[x][y].sprite(),0, x, y);
+
+                    this.texture.getPixels().setPixelRGBA(x, y, c);
                 }
             }
             this.texture.upload();

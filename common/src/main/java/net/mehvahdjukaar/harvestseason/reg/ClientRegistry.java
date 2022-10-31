@@ -3,8 +3,12 @@ package net.mehvahdjukaar.harvestseason.reg;
 import net.mehvahdjukaar.harvestseason.HarvestSeason;
 import net.mehvahdjukaar.harvestseason.client.CarvedPumpkinBlockLoader;
 import net.mehvahdjukaar.harvestseason.client.CarvedPumpkinTileRenderer;
+import net.mehvahdjukaar.harvestseason.client.CarvingManager;
+import net.mehvahdjukaar.harvestseason.client.CarvingTooltipComponent;
+import net.mehvahdjukaar.harvestseason.items.ModCarvedPumpkinItem;
 import net.mehvahdjukaar.moonlight.api.misc.EventCalled;
 import net.mehvahdjukaar.moonlight.api.platform.ClientPlatformHelper;
+import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.texture.TextureAtlas;
 import net.minecraft.client.resources.model.Material;
 import net.minecraft.resources.ResourceLocation;
@@ -30,6 +34,11 @@ public class ClientRegistry {
         ClientPlatformHelper.addAtlasTextureCallback(TextureAtlas.LOCATION_BLOCKS, ClientRegistry::registerTextures);
         ClientPlatformHelper.addModelLoaderRegistration(ClientRegistry::registerModelLoaders);
         ClientPlatformHelper.addBlockEntityRenderersRegistration(ClientRegistry::registerBlockEntityRenderers);
+        ClientPlatformHelper.addTooltipComponentRegistration(ClientRegistry::registerTooltipComponent);
+    }
+
+    private static void registerTooltipComponent(ClientPlatformHelper.TooltipComponentEvent event) {
+        event.register(CarvingManager.Key.class, CarvingTooltipComponent::new);
     }
 
     private static void registerTextures(ClientPlatformHelper.AtlasTextureEvent event) {
@@ -50,5 +59,11 @@ public class ClientRegistry {
     @EventCalled
     private static void registerModelLoaders(ClientPlatformHelper.ModelLoaderEvent event) {
         event.register(HarvestSeason.res("carved_pumpkin"), new CarvedPumpkinBlockLoader());
+    }
+
+    public static void setup() {
+        ClientPlatformHelper.registerRenderType(ModRegistry.CORN_BASE.get(), RenderType.cutout());
+        ClientPlatformHelper.registerRenderType(ModRegistry.CORN_MIDDLE.get(), RenderType.cutout());
+        ClientPlatformHelper.registerRenderType(ModRegistry.CORN_TOP.get(), RenderType.cutout());
     }
 }
