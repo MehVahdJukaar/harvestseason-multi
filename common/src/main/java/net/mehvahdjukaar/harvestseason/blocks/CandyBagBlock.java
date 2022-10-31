@@ -4,16 +4,22 @@ import net.mehvahdjukaar.harvestseason.HarvestSeason;
 import net.mehvahdjukaar.harvestseason.reg.ModRegistry;
 import net.mehvahdjukaar.moonlight.api.util.Utils;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.Direction;
 import net.minecraft.core.Registry;
 import net.minecraft.core.particles.ItemParticleOption;
 import net.minecraft.core.particles.ParticleOptions;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.server.level.ServerLevel;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
+import net.minecraft.tags.BlockTags;
+import net.minecraft.util.RandomSource;
 import net.minecraft.util.StringRepresentable;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
+import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
@@ -21,6 +27,7 @@ import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.EntityBlock;
+import net.minecraft.world.level.block.FireBlock;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.StateDefinition;
@@ -34,6 +41,7 @@ import net.minecraft.world.phys.shapes.CollisionContext;
 import net.minecraft.world.phys.shapes.VoxelShape;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.Arrays;
 import java.util.List;
 import java.util.Locale;
 
@@ -43,6 +51,7 @@ public class CandyBagBlock extends Block implements EntityBlock {
 
     public static final EnumProperty<Content> CONTENT = EnumProperty.create("content", Content.class);
     public static final IntegerProperty FILL_LEVEL = IntegerProperty.create("fill_level", 1, 6);
+    private static final int POPCORN_COOK_TIME = 20 * 10;
 
     public CandyBagBlock(Properties properties) {
         super(properties);
@@ -54,8 +63,10 @@ public class CandyBagBlock extends Block implements EntityBlock {
         if (content != null) {
             ItemStack remove = player.isCreative() ? stack.copy() : stack.split(1);
             remove.setCount(1);
-            level.setBlockAndUpdate(pos, ModRegistry.CANDY_BAG.get().defaultBlockState().setValue(CONTENT, content));
+            BlockState state = ModRegistry.CANDY_BAG.get().defaultBlockState().setValue(CONTENT, content);
+            level.setBlockAndUpdate(pos, state);
             playSound(level, pos);
+            schedulePopTickIfPossible(state, level, pos);
             if (content == Content.OTHER_CANDY) {
                 if (level.getBlockEntity(pos) instanceof CandyBagTile tile) {
                     tile.setDisplayedItem(remove);
@@ -66,6 +77,11 @@ public class CandyBagBlock extends Block implements EntityBlock {
         return false;
     }
 
+    @Override
+    public void setPlacedBy(Level level, BlockPos pos, BlockState state, @Nullable LivingEntity placer, ItemStack stack) {
+        super.setPlacedBy(level, pos, state, placer, stack);
+        schedulePopTickIfPossible(state, level, pos);
+    }
 
     @Override
     public VoxelShape getShape(BlockState state, BlockGetter level, BlockPos pos, CollisionContext context) {
@@ -82,8 +98,7 @@ public class CandyBagBlock extends Block implements EntityBlock {
     public List<ItemStack> getDrops(BlockState state, LootContext.Builder builder) {
         List<ItemStack> list = super.getDrops(state, builder);
         if (builder.getOptionalParameter(LootContextParams.BLOCK_ENTITY) instanceof CandyBagTile tile) {
-
-
+            list.add(tile.getDisplayedItem().copy());
         }
         var i = getContent(state);
         if (i != null) {
@@ -95,20 +110,21 @@ public class CandyBagBlock extends Block implements EntityBlock {
     @Override
     public InteractionResult use(BlockState state, Level level, BlockPos pos, Player player, InteractionHand hand,
                                  BlockHitResult hit) {
-
-        Item item;
+        int fill = state.getValue(FILL_LEVEL);
+        ItemStack item;
         if (level.getBlockEntity(pos) instanceof CandyBagTile tile) {
-            item = null;
+            item = tile.getDisplayedItem();
+            if (item.isEmpty()) item = null;
         } else {
-            item = getContent(state);
+            item = new ItemStack(getContent(state), fill);
         }
         if (item == null) return InteractionResult.PASS;
 
-        int fill = state.getValue(FILL_LEVEL);
+
         int delta = 0;
         ItemStack held = player.getItemInHand(hand);
         if (player.isShiftKeyDown() && held.isEmpty()) {
-            ItemStack extracted = new ItemStack(item);
+            ItemStack extracted = item.split(1);
             if (!extracted.isEmpty()) {
                 Utils.swapItem(player, hand, extracted);
                 delta = -1;
@@ -120,10 +136,10 @@ public class CandyBagBlock extends Block implements EntityBlock {
         } else {
             if (item.isEdible() && player.canEat(false) && !player.isCreative()) {
                 //eat cookies
-                player.eat(level, new ItemStack(item));
+                player.eat(level, item.copy());
                 delta = -1;
                 if (level.isClientSide) {
-                    ParticleOptions particleOptions = new ItemParticleOption(ParticleTypes.ITEM, item.getDefaultInstance());
+                    ParticleOptions particleOptions = new ItemParticleOption(ParticleTypes.ITEM, item);
                     double dy = 0.005 + fill / 16d;
                     double power = 0.2;
                     for (int i = 0; i < 12; ++i) {
@@ -132,7 +148,7 @@ public class CandyBagBlock extends Block implements EntityBlock {
                                 pos.getY() + dy,
                                 pos.getZ() + 2 / 16f + level.random.nextFloat() * 12 / 16f,
                                 (level.random.nextFloat() - 0.5) * power,
-                                (level.random.nextFloat() - 0.5) * power,
+                                (level.random.nextFloat()) * power * 0.7,
                                 (level.random.nextFloat() - 0.5) * power);
                     }
                 }
@@ -163,6 +179,80 @@ public class CandyBagBlock extends Block implements EntityBlock {
             if (i.isPresent()) return i.get();
         }
         return null;
+    }
+
+    @Override
+    public void neighborChanged(BlockState state, Level level, BlockPos pos, Block neighbor, BlockPos fromPos, boolean isMoving) {
+        super.neighborChanged(state, level, pos, neighbor, fromPos, isMoving);
+        if (state.getValue(CONTENT) == Content.KERNELS && canCook(level.getBlockState(fromPos).getBlock())) {
+            level.scheduleTick(pos, this, POPCORN_COOK_TIME);
+        }
+    }
+
+    @Override
+    public void tick(BlockState state, ServerLevel level, BlockPos pos, RandomSource random) {
+        if (state.getValue(CONTENT) == Content.KERNELS) {
+            var canPop = Arrays.stream(Direction.values()).anyMatch(d -> canCook(level.getBlockState(pos.relative(d)).getBlock()));
+            if (canPop) {
+                popCorn(state, level, pos);
+                level.scheduleTick(pos, this, 3);
+            }
+        }
+    }
+
+    private static void schedulePopTickIfPossible(BlockState state, Level level, BlockPos pos) {
+        var canPop = Arrays.stream(Direction.values()).anyMatch(d -> canCook(level.getBlockState(pos.relative(d)).getBlock()));
+        if (canPop) {
+            level.scheduleTick(pos, state.getBlock(), POPCORN_COOK_TIME);
+        }
+    }
+
+    private void popCorn(BlockState state, ServerLevel level, BlockPos pos) {
+        int fill = state.getValue(FILL_LEVEL);
+        ItemStack item = new ItemStack(ModRegistry.POP_CORN.get());
+        level.blockEvent(pos, this, 1, 0);
+        if (fill == 1) {
+            level.setBlockAndUpdate(pos, ModRegistry.PAPER_BAG.get().defaultBlockState());
+        } else {
+            level.setBlockAndUpdate(pos, state.setValue(FILL_LEVEL, fill - 1));
+        }
+
+        ItemEntity itemEntity = new ItemEntity(level, pos.getX() + 0.5, pos.getY() + 0.6, pos.getZ() + 0.5, item);
+
+        itemEntity.setDeltaMovement(level.random.nextDouble() * 0.02,
+                0.08 + level.random.nextDouble() * 0.2,
+                level.random.nextDouble() * 0.02);
+        level.addFreshEntity(itemEntity);
+
+        level.playSound(null, pos, SoundEvents.FIREWORK_ROCKET_BLAST, SoundSource.BLOCKS, 0.2f, 2f);
+    }
+
+    @Override
+    public boolean triggerEvent(BlockState state, Level level, BlockPos pos, int id, int param) {
+        if (id == 1) {
+            if (level.isClientSide) {
+                int fill = state.getValue(FILL_LEVEL);
+                ItemStack item = new ItemStack(ModRegistry.POP_CORN.get());
+                ParticleOptions particleOptions = new ItemParticleOption(ParticleTypes.ITEM, item);
+                double dy = 0.005 + fill / 16d;
+                double power = 0.3;
+                for (int i = 0; i < 7; ++i) {
+                    level.addParticle(particleOptions,
+                            pos.getX() + 0.5,
+                            pos.getY() + dy,
+                            pos.getZ() + 0.5,
+                            (level.random.nextFloat() - 0.5) * power,
+                            (level.random.nextFloat()) * power + 0.2,
+                            (level.random.nextFloat() - 0.5) * power);
+                }
+            }
+            return true;
+        }
+        return super.triggerEvent(state, level, pos, id, param);
+    }
+
+    private static boolean canCook(Block neighbor) {
+        return neighbor.builtInRegistryHolder().is(BlockTags.CAMPFIRES) || neighbor instanceof FireBlock;
     }
 
     @Override

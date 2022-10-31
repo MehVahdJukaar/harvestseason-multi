@@ -2,6 +2,10 @@
   "replace": false,
   "values": [
     {
+      "id": "minecraft:cookie",
+      "required": false
+    },
+    {
       "id": "croptopia:candy_corn",
       "required": false
     },

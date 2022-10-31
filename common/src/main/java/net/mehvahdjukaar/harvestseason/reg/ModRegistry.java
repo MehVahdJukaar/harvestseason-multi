@@ -3,6 +3,7 @@ package net.mehvahdjukaar.harvestseason.reg;
 import net.mehvahdjukaar.harvestseason.HarvestSeason;
 import net.mehvahdjukaar.harvestseason.blocks.*;
 import net.mehvahdjukaar.harvestseason.items.ModCarvedPumpkinItem;
+import net.mehvahdjukaar.harvestseason.items.PaperBagItem;
 import net.mehvahdjukaar.harvestseason.items.crafting.JackOLanternRecipe;
 import net.mehvahdjukaar.harvestseason.items.crafting.PumpkinDuplicateRecipe;
 import net.mehvahdjukaar.moonlight.api.item.WoodBasedBlockItem;
@@ -41,7 +42,7 @@ public class ModRegistry {
             "jack_o_lantern", JackOLanternRecipe::new);
 
     public static final Supplier<Block> CORN_BASE = regBlock("corn_base", () -> new CornBaseBlock(
-            BlockBehaviour.Properties.copy(Blocks.ROSE_BUSH)
+            BlockBehaviour.Properties.copy(Blocks.WHEAT)
                     .randomTicks()
                     .offsetType(BlockBehaviour.OffsetType.NONE)
                     .instabreak()
@@ -69,8 +70,12 @@ public class ModRegistry {
             (new Item.Properties()).tab(CreativeModeTab.TAB_FOOD).food(ModFood.CANDY_CORN)));
 
 
-    public static final Supplier<Block> PAPER_BAG = regWithItem("paper_bag", () -> new PaperBagBlock(
-            BlockBehaviour.Properties.copy(Blocks.WHITE_WOOL).strength(0.5f, 0.5f)), CreativeModeTab.TAB_MISC);
+    public static final Supplier<Block> PAPER_BAG = regBlock("paper_bag", () -> new PaperBagBlock(
+            BlockBehaviour.Properties.copy(Blocks.WHITE_WOOL).strength(0.5f, 0.5f)));
+
+    public static final Supplier<Item> PAPER_BAG_ITEM = regItem("paper_bag", () -> new PaperBagItem(
+            PAPER_BAG.get(), (new Item.Properties()).tab(CreativeModeTab.TAB_MISC)));
+
 
     public static final Supplier<Block> CANDY_BAG = regBlock("candy_bag", () -> new CandyBagBlock(
             BlockBehaviour.Properties.copy(PAPER_BAG.get())));

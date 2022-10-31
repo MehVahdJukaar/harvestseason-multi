@@ -1,0 +1,18 @@
+{
+  "structures": [
+    {
+      "structure": "harvestseason:abandoned_farm",
+      "weight": 1
+    }
+  ],
+  "placement": {
+
+    "type": "minecraft:random_spread",
+
+    "salt": 121931326,
+
+    "spacing": 17,
+
+    "separation": 12
+  }
+}

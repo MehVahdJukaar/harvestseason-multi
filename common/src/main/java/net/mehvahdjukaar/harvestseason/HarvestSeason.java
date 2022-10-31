@@ -5,7 +5,9 @@ import net.mehvahdjukaar.harvestseason.reg.ModConfigs;
 import net.mehvahdjukaar.harvestseason.reg.ModRegistry;
 import net.mehvahdjukaar.moonlight.api.misc.EventCalled;
 import net.mehvahdjukaar.moonlight.api.platform.PlatformHelper;
+import net.mehvahdjukaar.supplementaries.Supplementaries;
 import net.minecraft.advancements.CriteriaTriggers;
+import net.minecraft.advancements.critereon.LocationPredicate;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.Registry;
@@ -14,6 +16,7 @@ import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.stats.Stats;
+import net.minecraft.tags.BiomeTags;
 import net.minecraft.tags.TagKey;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
@@ -24,10 +27,12 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.item.ShearsItem;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.level.biome.Biome;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.CarvedPumpkinBlock;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.gameevent.GameEvent;
+import net.minecraft.world.level.levelgen.GenerationStep;
 import net.minecraft.world.phys.BlockHitResult;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -61,16 +66,18 @@ public class HarvestSeason {
 
 
     public static void onConfigReload() {
-
-
     }
 
 
     public static TagKey<Item> MODDED_CANDIES = itemTag("candy");
     public static TagKey<Item> CARVERS = itemTag("pumpkin_carvers");
+    public static TagKey<Biome> HAS_FARM = biomeTag("has_abandoned_farm");
 
     private static TagKey<Item> itemTag(String name) {
         return TagKey.create(Registry.ITEM_REGISTRY, HarvestSeason.res(name));
+    }
+    private static TagKey<Biome> biomeTag(String name) {
+        return TagKey.create(Registry.BIOME_REGISTRY, Supplementaries.res(name));
     }
 
     @EventCalled

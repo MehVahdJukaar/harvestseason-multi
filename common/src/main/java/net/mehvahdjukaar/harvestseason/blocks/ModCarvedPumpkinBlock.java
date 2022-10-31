@@ -87,7 +87,7 @@ public class ModCarvedPumpkinBlock extends CarvedPumpkinBlock implements EntityB
             CarveMode mode = te.getCarveMode();
 
             if (mode != CarveMode.NONE) {
-                if (hit.getDirection() == state.getValue(FACING) && mode.canManualDraw()) {
+                if (hit.getDirection() == state.getValue(FACING) && mode.canManualDraw() && isCarverItem(stack)) {
 
                     Pair<Integer, Integer> pair = getHitSubPixel(hit);
                     int x = pair.getFirst();
