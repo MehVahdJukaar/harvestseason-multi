@@ -48,7 +48,7 @@ public class ModRegistry {
                     .sound(SoundType.CROP))
     );
 
-    public static final Supplier<Block> CORN_MIDDLE = regBlock("corn_midle", () -> new CornMiddleBlock(
+    public static final Supplier<Block> CORN_MIDDLE = regBlock("corn_middle", () -> new CornMiddleBlock(
             BlockBehaviour.Properties.copy(CORN_BASE.get()))
     );
 
@@ -60,13 +60,13 @@ public class ModRegistry {
             (new Item.Properties()).tab(CreativeModeTab.TAB_MISC)));
 
     public static final Supplier<Item> COOKED_COB = regItem("corn_on_the_cob", () -> new Item(
-            (new Item.Properties()).tab(CreativeModeTab.TAB_FOOD)));
+            (new Item.Properties()).tab(CreativeModeTab.TAB_FOOD).food(ModFood.CORN_ON_THE_COB)));
 
     public static final Supplier<Item> POP_CORN = regItem("popcorn", () -> new Item(
-            (new Item.Properties()).tab(CreativeModeTab.TAB_FOOD)));
+            (new Item.Properties()).tab(CreativeModeTab.TAB_FOOD).food(ModFood.POPCORN)));
 
     public static final Supplier<Item> CANDY_CORN = regItem("candy_corn", () -> new Item(
-            (new Item.Properties()).tab(CreativeModeTab.TAB_FOOD)));
+            (new Item.Properties()).tab(CreativeModeTab.TAB_FOOD).food(ModFood.CANDY_CORN)));
 
 
     public static final Supplier<Block> PAPER_BAG = regWithItem("paper_bag", () -> new PaperBagBlock(
@@ -74,6 +74,10 @@ public class ModRegistry {
 
     public static final Supplier<Block> CANDY_BAG = regBlock("candy_bag", () -> new CandyBagBlock(
             BlockBehaviour.Properties.copy(Blocks.WHITE_WOOL)));
+
+    public static final Supplier<BlockEntityType<CandyBagTile>> CANDY_BAG_TILE = regTile(
+            "candy_bag", () -> PlatformHelper.newBlockEntityType(
+                    CandyBagTile::new, CANDY_BAG.get()));
 
     public static final Supplier<Item> CORN_SEEDS = regItem("kernels", () -> new ItemNameBlockItem(CORN_BASE.get(),
             (new Item.Properties()).tab(CreativeModeTab.TAB_MISC)));

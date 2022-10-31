@@ -2,34 +2,6 @@
   "replace": false,
   "values": [
     {
-      "id": "minecraft:apple",
-      "required": true
-    },
-    {
-      "id": "minecraft:cookie",
-      "required": true
-    },
-    {
-      "id": "supplementaries:candy",
-      "required": false
-    },
-    {
-      "id": "croptopia:raisin_oatmeal_cookie",
-      "required": false
-    },
-    {
-      "id": "croptopia:nutty_cookie",
-      "required": false
-    },
-    {
-      "id": "croptopia:nutty_cookie",
-      "required": false
-    },
-    {
-      "id": "croptopia:chocolate",
-      "required": false
-    },
-    {
       "id": "croptopia:candy_corn",
       "required": false
     },
@@ -42,15 +14,7 @@
       "required": false
     },
     {
-      "id": "vanillacookbook:chocolate",
-      "required": false
-    },
-    {
       "id": "vanillacookbook:sword_lollipop",
-      "required": false
-    },
-    {
-      "id": "bumpkinbatch:ore_o",
       "required": false
     },
     {
@@ -126,19 +90,11 @@
       "required": false
     },
     {
-      "id": "candymod:chocolate_bar",
-      "required": false
-    },
-    {
       "id": "trickortreat:bonebreaker",
       "required": false
     },
     {
       "id": "trickxortreat:sugarbone",
-      "required": false
-    },
-    {
-      "id": "snowyspirit:candy_cane",
       "required": false
     }
   ]

@@ -3,10 +3,11 @@
 	"gui.harvestseason.carving.edit": "Carve",
 	"gui.harvestseason.carving.clear": "Clear",
     "item.harvestseason.corn": "Corn",
-    "item.harvestseason.corn_on_the_cob": "Corn",
+    "item.harvestseason.corn_on_the_cob": "Corn on the Cob",
     "item.harvestseason.popcorn": "Popcorn",
     "item.harvestseason.candy_corn": "Candy Corn",
-    "item.harvestseason.paper_bag": "Paper Bag",
+    "block.harvestseason.paper_bag": "Paper Bag",
+    "block.harvestseason.candy_bag": "Candy Bag",
     "block.harvestseason.jack_o_lantern": "Jack_o_lantern",
     "block.harvestseason.carved_pumpkin": "Carved Pumpkin"
 }

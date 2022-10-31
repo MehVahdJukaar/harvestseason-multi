@@ -8,15 +8,18 @@ import net.mehvahdjukaar.moonlight.api.platform.PlatformHelper;
 import net.minecraft.advancements.CriteriaTriggers;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
+import net.minecraft.core.Registry;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.stats.Stats;
+import net.minecraft.tags.TagKey;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.item.ShearsItem;
@@ -61,6 +64,13 @@ public class HarvestSeason {
     public static void onConfigReload() {
 
 
+    }
+
+
+    public static TagKey<Item> MODDED_CANDIES = itemTag("candy");
+
+    private static TagKey<Item> itemTag(String name) {
+        return TagKey.create(Registry.ITEM_REGISTRY, HarvestSeason.res(name));
     }
 
     @EventCalled

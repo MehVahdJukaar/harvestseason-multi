@@ -5,7 +5,6 @@ import net.mehvahdjukaar.harvestseason.client.CarvedPumpkinBlockLoader;
 import net.mehvahdjukaar.harvestseason.client.CarvedPumpkinTileRenderer;
 import net.mehvahdjukaar.harvestseason.client.CarvingManager;
 import net.mehvahdjukaar.harvestseason.client.CarvingTooltipComponent;
-import net.mehvahdjukaar.harvestseason.items.ModCarvedPumpkinItem;
 import net.mehvahdjukaar.moonlight.api.misc.EventCalled;
 import net.mehvahdjukaar.moonlight.api.platform.ClientPlatformHelper;
 import net.minecraft.client.renderer.RenderType;
@@ -16,6 +15,9 @@ import net.minecraft.resources.ResourceLocation;
 import static net.minecraft.client.renderer.texture.TextureAtlas.LOCATION_BLOCKS;
 
 public class ClientRegistry {
+
+    public static final ResourceLocation JACK_O_LANTERN_FRAME = HarvestSeason.res("block/jack_o_lantern_frame");
+    public static final ResourceLocation PUMPKIN_FRAME = HarvestSeason.res("block/pumpkin_frame");
 
     public static final Material CARVED_PUMPKIN_BACKGROUND = new Material(LOCATION_BLOCKS, HarvestSeason.res("block/carved_pumpkin_background"));
     public static final Material CARVED_PUMPKIN_SHADE = new Material(LOCATION_BLOCKS, HarvestSeason.res("block/carved_pumpkin_shade"));
@@ -35,6 +37,7 @@ public class ClientRegistry {
         ClientPlatformHelper.addModelLoaderRegistration(ClientRegistry::registerModelLoaders);
         ClientPlatformHelper.addBlockEntityRenderersRegistration(ClientRegistry::registerBlockEntityRenderers);
         ClientPlatformHelper.addTooltipComponentRegistration(ClientRegistry::registerTooltipComponent);
+        ClientPlatformHelper.addSpecialModelRegistration(ClientRegistry::registerSpecialModels);
     }
 
     private static void registerTooltipComponent(ClientPlatformHelper.TooltipComponentEvent event) {
@@ -59,6 +62,12 @@ public class ClientRegistry {
     @EventCalled
     private static void registerModelLoaders(ClientPlatformHelper.ModelLoaderEvent event) {
         event.register(HarvestSeason.res("carved_pumpkin"), new CarvedPumpkinBlockLoader());
+    }
+
+    @EventCalled
+    private static void registerSpecialModels(ClientPlatformHelper.SpecialModelEvent event) {
+        event.register(JACK_O_LANTERN_FRAME);
+        event.register(PUMPKIN_FRAME);
     }
 
     public static void setup() {

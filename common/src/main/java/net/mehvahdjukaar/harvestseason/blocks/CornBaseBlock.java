@@ -54,7 +54,7 @@ public class CornBaseBlock extends CropBlock {
             if (this.isValidBonemealTarget(level, pos, state, level.isClientSide)) {
                 float f = getGrowthSpeed(this, level, pos);
                 if (ForgeHelper.onCropsGrowPre(level, pos, state, random.nextInt((int) (25.0F / f) + 1) == 0)) {
-                    if (age + 1 == MAX_AGE) {
+                    if (age + 1 == this.getMaxAge()) {
                         level.setBlock(pos.above(), ModRegistry.CORN_MIDDLE.get().defaultBlockState(), 3);
                     }
                     level.setBlock(pos, this.getStateForAge(age + 1), 2);

@@ -28,6 +28,7 @@ import net.minecraft.world.phys.Vec3;
 
 import javax.annotation.Nullable;
 
+//TODO: IOwner protected
 public class ModCarvedPumpkinBlock extends CarvedPumpkinBlock implements EntityBlock {
 
 
