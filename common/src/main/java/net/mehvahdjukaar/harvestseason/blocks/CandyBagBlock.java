@@ -5,7 +5,12 @@ import net.mehvahdjukaar.harvestseason.reg.ModRegistry;
 import net.mehvahdjukaar.moonlight.api.util.Utils;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Registry;
+import net.minecraft.core.particles.ItemParticleOption;
+import net.minecraft.core.particles.ParticleOptions;
+import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.sounds.SoundEvents;
+import net.minecraft.sounds.SoundSource;
 import net.minecraft.util.StringRepresentable;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
@@ -44,11 +49,13 @@ public class CandyBagBlock extends Block implements EntityBlock {
         this.registerDefaultState(this.defaultBlockState().setValue(CONTENT, Content.POPCORN).setValue(FILL_LEVEL, 1));
     }
 
-    public static boolean tryFilling(Level level, BlockPos pos, ItemStack stack) {
+    public static boolean tryFilling(Player player, Level level, BlockPos pos, ItemStack stack) {
         Content content = Content.get(stack);
         if (content != null) {
-            ItemStack remove = stack.split(1);
+            ItemStack remove = player.isCreative() ? stack.copy() : stack.split(1);
+            remove.setCount(1);
             level.setBlockAndUpdate(pos, ModRegistry.CANDY_BAG.get().defaultBlockState().setValue(CONTENT, content));
+            playSound(level, pos);
             if (content == Content.OTHER_CANDY) {
                 if (level.getBlockEntity(pos) instanceof CandyBagTile tile) {
                     tile.setDisplayedItem(remove);
@@ -97,27 +104,42 @@ public class CandyBagBlock extends Block implements EntityBlock {
         }
         if (item == null) return InteractionResult.PASS;
 
+        int fill = state.getValue(FILL_LEVEL);
         int delta = 0;
         ItemStack held = player.getItemInHand(hand);
-        if (!player.isShiftKeyDown()) {
-
-            if (item.isEdible() && player.canEat(false) && !player.isCreative()) {
-                //eat cookies
-                player.eat(level, new ItemStack(item));
-                delta = -1;
-            }
-        } else if (held.isEmpty()) {
+        if (player.isShiftKeyDown() && held.isEmpty()) {
             ItemStack extracted = new ItemStack(item);
             if (!extracted.isEmpty()) {
                 Utils.swapItem(player, hand, extracted);
                 delta = -1;
             }
-        } else if (Content.get(held) == state.getValue(CONTENT)) {
-            held.shrink(1);
+        } else if (fill != 6 && Content.get(held) == state.getValue(CONTENT)) {
+            if (!player.isCreative()) held.shrink(1);
+            playSound(level, pos);
             delta += 1;
+        } else {
+            if (item.isEdible() && player.canEat(false) && !player.isCreative()) {
+                //eat cookies
+                player.eat(level, new ItemStack(item));
+                delta = -1;
+                if (level.isClientSide) {
+                    ParticleOptions particleOptions = new ItemParticleOption(ParticleTypes.ITEM, item.getDefaultInstance());
+                    double dy = 0.005 + fill / 16d;
+                    double power = 0.2;
+                    for (int i = 0; i < 12; ++i) {
+                        level.addParticle(particleOptions,
+                                pos.getX() + 2 / 16f + level.random.nextFloat() * 12 / 16f,
+                                pos.getY() + dy,
+                                pos.getZ() + 2 / 16f + level.random.nextFloat() * 12 / 16f,
+                                (level.random.nextFloat() - 0.5) * power,
+                                (level.random.nextFloat() - 0.5) * power,
+                                (level.random.nextFloat() - 0.5) * power);
+                    }
+                }
+            }
         }
         if (delta != 0) {
-            int fill = state.getValue(FILL_LEVEL);
+
             int newFill = fill + delta;
             if (newFill == 0) {
                 level.setBlockAndUpdate(pos, ModRegistry.PAPER_BAG.get().defaultBlockState());
@@ -127,6 +149,10 @@ public class CandyBagBlock extends Block implements EntityBlock {
             return InteractionResult.sidedSuccess(level.isClientSide);
         }
         return InteractionResult.PASS;
+    }
+
+    private static void playSound(Level level, BlockPos pos) {
+        level.playSound(null, pos, SoundEvents.CROP_PLANTED, SoundSource.PLAYERS, 1, 1.2f);
     }
 
     @Nullable
@@ -153,7 +179,7 @@ public class CandyBagBlock extends Block implements EntityBlock {
     public enum Content implements StringRepresentable {
         CANDY("supplementaries:candy"),
         CANDY_CANE("snowyspirit:candy_cane"),
-        CANDY_CORN("harvestseason:candy"),
+        CANDY_CORN("harvestseason:candy_corn"),
         POPCORN("harvestseason:popcorn"),
         KERNELS("harvestseason:kernels"),
         OTHER_CANDY(null);
@@ -166,9 +192,10 @@ public class CandyBagBlock extends Block implements EntityBlock {
 
         @Nullable
         public static Content get(ItemStack item) {
+            if (item.isEmpty()) return null;
             String name = Utils.getID(item.getItem()).toString();
             for (var c : Content.values()) {
-                if (c != null && c.drop.equals(name)) return c;
+                if (c.drop != null && c.drop.equals(name)) return c;
             }
             if (item.is(HarvestSeason.MODDED_CANDIES)) return OTHER_CANDY;
             return null;

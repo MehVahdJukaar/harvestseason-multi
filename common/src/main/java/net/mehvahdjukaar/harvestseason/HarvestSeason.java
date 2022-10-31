@@ -45,8 +45,7 @@ public class HarvestSeason {
 
     public static final Logger LOGGER = LogManager.getLogger();
 
-    public static boolean SEASON_MOD_INSTALLED = PlatformHelper.isModLoaded(PlatformHelper.getPlatform().isForge() ? "sereneseasons" : "seasons");
-
+    public static final boolean SUPP_INSTALLED = PlatformHelper.isModLoaded("supplementaries");
 
     public static void commonInit() {
         ModConfigs.earlyLoad();
@@ -68,6 +67,7 @@ public class HarvestSeason {
 
 
     public static TagKey<Item> MODDED_CANDIES = itemTag("candy");
+    public static TagKey<Item> CARVERS = itemTag("pumpkin_carvers");
 
     private static TagKey<Item> itemTag(String name) {
         return TagKey.create(Registry.ITEM_REGISTRY, HarvestSeason.res(name));

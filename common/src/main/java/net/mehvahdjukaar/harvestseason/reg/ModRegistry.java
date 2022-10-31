@@ -60,20 +60,20 @@ public class ModRegistry {
             (new Item.Properties()).tab(CreativeModeTab.TAB_MISC)));
 
     public static final Supplier<Item> COOKED_COB = regItem("corn_on_the_cob", () -> new Item(
-            (new Item.Properties()).tab(CreativeModeTab.TAB_FOOD).food(ModFood.CORN_ON_THE_COB)));
+            (new Item.Properties()).tab(CreativeModeTab.TAB_FOOD).stacksTo(16).food(ModFood.CORN_ON_THE_COB)));
 
     public static final Supplier<Item> POP_CORN = regItem("popcorn", () -> new Item(
             (new Item.Properties()).tab(CreativeModeTab.TAB_FOOD).food(ModFood.POPCORN)));
 
-    public static final Supplier<Item> CANDY_CORN = regItem("candy_corn", () -> new Item(
+    public static final Supplier<Item> CANDY_CORN = regItem("candy_corn", () -> new CandyCornItem(
             (new Item.Properties()).tab(CreativeModeTab.TAB_FOOD).food(ModFood.CANDY_CORN)));
 
 
     public static final Supplier<Block> PAPER_BAG = regWithItem("paper_bag", () -> new PaperBagBlock(
-            BlockBehaviour.Properties.copy(Blocks.WHITE_WOOL)), CreativeModeTab.TAB_MISC);
+            BlockBehaviour.Properties.copy(Blocks.WHITE_WOOL).strength(0.5f, 0.5f)), CreativeModeTab.TAB_MISC);
 
     public static final Supplier<Block> CANDY_BAG = regBlock("candy_bag", () -> new CandyBagBlock(
-            BlockBehaviour.Properties.copy(Blocks.WHITE_WOOL)));
+            BlockBehaviour.Properties.copy(PAPER_BAG.get())));
 
     public static final Supplier<BlockEntityType<CandyBagTile>> CANDY_BAG_TILE = regTile(
             "candy_bag", () -> PlatformHelper.newBlockEntityType(

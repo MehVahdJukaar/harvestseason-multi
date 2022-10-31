@@ -1,0 +1,9 @@
+{
+  "type": "minecraft:smelting",
+  "ingredient": {
+    "item": "harvestseason:kernels"
+  },
+  "result": "harvestseason:popcorn",
+  "experience": 0.35,
+  "cookingtime": 200
+}

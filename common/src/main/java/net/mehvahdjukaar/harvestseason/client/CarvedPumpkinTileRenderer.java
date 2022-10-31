@@ -52,7 +52,7 @@ public class CarvedPumpkinTileRenderer implements BlockEntityRenderer<ModCarvedP
     public void render(ModCarvedPumpkinBlockTile tile, float partialTicks, PoseStack matrixStackIn, MultiBufferSource bufferIn, int combinedLightIn,
                        int combinedOverlayIn) {
 
-        if (!ModConfigs.CARVE_MODE.get().canManualDraw()) return;
+        if (!tile.getCarveMode().canManualDraw()) return;
 
         Direction dir = tile.getDirection();
         float yaw = -dir.toYRot();

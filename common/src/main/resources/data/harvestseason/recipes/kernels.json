@@ -1,0 +1,12 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "ingredients": [
+    {
+      "item": "harvestseason:corn"
+    }
+  ],
+  "result": {
+    "item": "harvestseason:kernels",
+    "count": 4
+  }
+}

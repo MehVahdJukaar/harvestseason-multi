@@ -39,7 +39,7 @@ public class CornBaseBlock extends CropBlock {
     @Override
     public boolean canSurvive(BlockState state, LevelReader level, BlockPos pos) {
         if (getAge(state) == getMaxAge()) {
-           // if (!level.getBlockState(pos.above()).is(ModRegistry.CORN_MIDDLE.get())) return false;
+            if (!level.getBlockState(pos.above()).is(ModRegistry.CORN_MIDDLE.get())) return false;
         }
         return super.canSurvive(state, level, pos);
     }

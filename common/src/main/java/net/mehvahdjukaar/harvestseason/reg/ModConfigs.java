@@ -10,7 +10,9 @@ import java.util.function.Supplier;
 
 public class ModConfigs {
 
-    public static Supplier<ModCarvedPumpkinBlock.UseMode> CARVE_MODE;
+    public static Supplier<ModCarvedPumpkinBlock.CarveMode> PUMPKIN_CARVE_MODE;
+    public static Supplier<ModCarvedPumpkinBlock.CarveMode> JACK_O_LANTERN_CARVE_MODE;
+    public static Supplier<ModCarvedPumpkinBlock.CarveMode> CARVE_MODE;
 
 
     public static ConfigSpec SPEC;
@@ -19,8 +21,10 @@ public class ModConfigs {
         ConfigBuilder builder = ConfigBuilder.create(HarvestSeason.res("common"), ConfigType.COMMON);
 
         builder.push("pumpkin_carving");
-        CARVE_MODE = builder.comment("Pumpkin carving mode")
-                .define("carve_mode", ModCarvedPumpkinBlock.UseMode.BOTH);
+        PUMPKIN_CARVE_MODE = builder.comment("Pumpkin carving mode")
+                .define("pumpkin_carve_mode", ModCarvedPumpkinBlock.CarveMode.BOTH);
+        JACK_O_LANTERN_CARVE_MODE = builder.comment("Jack o Lantern carving mode")
+                .define("jack_o_lantern_carve_mode", ModCarvedPumpkinBlock.CarveMode.NONE);
 
         builder.pop();
 

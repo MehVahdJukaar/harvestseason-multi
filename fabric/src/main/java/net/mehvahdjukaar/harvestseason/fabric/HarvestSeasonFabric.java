@@ -34,6 +34,8 @@ public class HarvestSeasonFabric implements ModInitializer {
 
         registerISTER(ModRegistry.MOD_JACK_O_LANTERN_ITEM.get());
         registerISTER(ModRegistry.MOD_CARVED_PUMPKIN_ITEM.get());
+
+        ClientRegistry.setup();
     }
 
 

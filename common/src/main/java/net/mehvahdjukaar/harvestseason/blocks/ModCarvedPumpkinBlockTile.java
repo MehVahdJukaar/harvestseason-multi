@@ -2,6 +2,7 @@ package net.mehvahdjukaar.harvestseason.blocks;
 
 import net.mehvahdjukaar.harvestseason.client.CarvingGui;
 import net.mehvahdjukaar.harvestseason.client.CarvingManager.Key;
+import net.mehvahdjukaar.harvestseason.reg.ModConfigs;
 import net.mehvahdjukaar.harvestseason.reg.ModRegistry;
 import net.mehvahdjukaar.moonlight.api.block.IOwnerProtected;
 import net.mehvahdjukaar.moonlight.api.client.IScreenProvider;
@@ -210,5 +211,10 @@ public class ModCarvedPumpkinBlockTile extends BlockEntity implements IOwnerProt
 
     public boolean isWaxed() {
         return this.waxed;
+    }
+
+    public ModCarvedPumpkinBlock.CarveMode getCarveMode() {
+        if (this.isJackOLantern) return ModConfigs.JACK_O_LANTERN_CARVE_MODE.get();
+        return ModConfigs.PUMPKIN_CARVE_MODE.get();
     }
 }

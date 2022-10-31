@@ -1,8 +1,9 @@
 package net.mehvahdjukaar.harvestseason.blocks;
 
 import com.mojang.datafixers.util.Pair;
-import net.mehvahdjukaar.harvestseason.reg.ModConfigs;
+import net.mehvahdjukaar.harvestseason.HarvestSeason;
 import net.mehvahdjukaar.harvestseason.reg.ModRegistry;
+import net.mehvahdjukaar.moonlight.api.platform.PlatformHelper;
 import net.minecraft.advancements.CriteriaTriggers;
 import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
@@ -13,10 +14,7 @@ import net.minecraft.util.Mth;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.item.HoneycombItem;
-import net.minecraft.world.item.Item;
-import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.Items;
+import net.minecraft.world.item.*;
 import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.CarvedPumpkinBlock;
@@ -30,7 +28,6 @@ import javax.annotation.Nullable;
 
 //TODO: IOwner protected
 public class ModCarvedPumpkinBlock extends CarvedPumpkinBlock implements EntityBlock {
-
 
 
     public ModCarvedPumpkinBlock(Properties properties) {
@@ -49,8 +46,8 @@ public class ModCarvedPumpkinBlock extends CarvedPumpkinBlock implements EntityB
         return new Pair<>(x, y);
     }
 
-    public static boolean isCarverItem(ItemStack mainHandItem) {
-        return true;
+    public static boolean isCarverItem(ItemStack stack) {
+        return PlatformHelper.getPlatform().isFabric() ? stack.getItem() instanceof SwordItem : stack.is(HarvestSeason.CARVERS);
     }
 
     @Override
@@ -87,35 +84,37 @@ public class ModCarvedPumpkinBlock extends CarvedPumpkinBlock implements EntityB
                 return InteractionResult.sidedSuccess(level.isClientSide);
             }
 
-            UseMode mode = ModConfigs.CARVE_MODE.get();
+            CarveMode mode = te.getCarveMode();
 
-            if (hit.getDirection() == state.getValue(FACING) && mode.canManualDraw()) {
+            if (mode != CarveMode.NONE) {
+                if (hit.getDirection() == state.getValue(FACING) && mode.canManualDraw()) {
 
-                Pair<Integer, Integer> pair = getHitSubPixel(hit);
-                int x = pair.getFirst();
-                int y = pair.getSecond();
+                    Pair<Integer, Integer> pair = getHitSubPixel(hit);
+                    int x = pair.getFirst();
+                    int y = pair.getSecond();
 
-                te.setPixel(x, y, !te.getPixel(x, y));
-                te.setChanged();
+                    te.setPixel(x, y, !te.getPixel(x, y));
+                    te.setChanged();
+                    return InteractionResult.sidedSuccess(level.isClientSide);
+                }
+                if (!level.isClientSide && mode.canOpenGui()) {
+                    te.sendOpenGuiPacket(level, pos, player);
+                }
                 return InteractionResult.sidedSuccess(level.isClientSide);
             }
-            if (!level.isClientSide && mode.canOpenGui()) {
-                te.sendOpenGuiPacket(level, pos, player);
-            }
-            return InteractionResult.sidedSuccess(level.isClientSide);
         }
         return InteractionResult.PASS;
     }
 
-    public enum UseMode {
-        BOTH, GUI, MANUAL;
+    public enum CarveMode {
+        NONE, BOTH, GUI, MANUAL;
 
         public boolean canOpenGui() {
-            return this != MANUAL;
+            return this != MANUAL && this != NONE;
         }
 
         public boolean canManualDraw() {
-            return this != GUI;
+            return this != GUI && this != NONE;
         }
     }
 

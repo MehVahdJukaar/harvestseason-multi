@@ -15,7 +15,6 @@ public class HarvestSeasonForgeClient {
     public static void init(final FMLClientSetupEvent event) {
         event.enqueueWork(() -> {
             ClientRegistry.setup();
-
         });
     }
 }

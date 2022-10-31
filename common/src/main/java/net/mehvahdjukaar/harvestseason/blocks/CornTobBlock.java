@@ -38,14 +38,6 @@ public class CornTobBlock extends CropBlock {
     }
 
 
-    @Override
-    public boolean canSurvive(BlockState state, LevelReader level, BlockPos pos) {
-        if (getAge(state) == getMaxAge()) {
-            if (!level.getBlockState(pos.above()).is(ModRegistry.CORN_TOP.get())) return false;
-        }
-        return super.canSurvive(state, level, pos);
-    }
-
     // Tick function
     @Override
     public void randomTick(BlockState state, ServerLevel level, BlockPos pos, RandomSource random) {
@@ -56,9 +48,6 @@ public class CornTobBlock extends CropBlock {
             if (this.isValidBonemealTarget(level, pos, state, level.isClientSide)) {
                 float f = getGrowthSpeed(this, level, pos);
                 if (ForgeHelper.onCropsGrowPre(level, pos, state, random.nextInt((int) (25.0F / f) + 1) == 0)) {
-                    if (age + 1 == this.getMaxAge()) {
-                        level.setBlock(pos.above(), ModRegistry.CORN_MIDDLE.get().defaultBlockState(), 3);
-                    }
                     level.setBlock(pos, this.getStateForAge(age + 1), 2);
                     ForgeHelper.onCropsGrowPost(level, pos, state);
                 }
