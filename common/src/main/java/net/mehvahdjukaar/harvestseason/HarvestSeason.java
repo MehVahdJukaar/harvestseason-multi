@@ -5,7 +5,6 @@ import net.mehvahdjukaar.harvestseason.reg.ModConfigs;
 import net.mehvahdjukaar.harvestseason.reg.ModRegistry;
 import net.mehvahdjukaar.moonlight.api.misc.EventCalled;
 import net.mehvahdjukaar.moonlight.api.platform.PlatformHelper;
-import net.mehvahdjukaar.supplementaries.Supplementaries;
 import net.minecraft.advancements.CriteriaTriggers;
 import net.minecraft.advancements.critereon.LocationPredicate;
 import net.minecraft.core.BlockPos;
@@ -68,16 +67,11 @@ public class HarvestSeason {
     public static void onConfigReload() {
     }
 
-
     public static TagKey<Item> MODDED_CANDIES = itemTag("candy");
     public static TagKey<Item> CARVERS = itemTag("pumpkin_carvers");
-    public static TagKey<Biome> HAS_FARM = biomeTag("has_abandoned_farm");
 
     private static TagKey<Item> itemTag(String name) {
         return TagKey.create(Registry.ITEM_REGISTRY, HarvestSeason.res(name));
-    }
-    private static TagKey<Biome> biomeTag(String name) {
-        return TagKey.create(Registry.BIOME_REGISTRY, Supplementaries.res(name));
     }
 
     @EventCalled

@@ -2,8 +2,8 @@
   "schemaVersion": 1,
   "id": "harvestseason",
   "version": "${version}",
-  "name": "Haunted Harvest",
-  "description": "Baby villagers can now trick or treat with adults and occasionally witches.",
+  "name": "Harvest Season",
+  "description": "Pumpkin Carving and Corn!",
   "authors": [
     "Mehvahdjukaar, Plantkillable"
   ],
@@ -19,7 +19,7 @@
       "net.mehvahdjukaar.harvestseason.fabric.HarvestSeasonFabric"
     ],
     "modmenu": [
-      "net.mehvahdjukaar.harvestseason.integration.fabric.modMenu.ModMenuCompat"
+      "net.mehvahdjukaar.harvestseason.integration.fabric.mod_menu.ModMenuCompat"
     ]
   },
   "mixins": [

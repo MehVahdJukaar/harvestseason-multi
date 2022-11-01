@@ -6,6 +6,14 @@
       "required": false
     },
     {
+      "id": "#villagersoctober:candy",
+      "required": false
+    },
+    {
+      "id": "#halloween_mood:candies",
+      "required": false
+    },
+    {
       "id": "croptopia:candy_corn",
       "required": false
     },

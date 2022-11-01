@@ -1,4 +1,4 @@
-package net.mehvahdjukaar.harvestseason.integration.fabric.modMenu;
+package net.mehvahdjukaar.harvestseason.integration.fabric.mod_menu;
 
 import net.mehvahdjukaar.harvestseason.HarvestSeason;
 import net.mehvahdjukaar.harvestseason.reg.ModConfigs;
@@ -16,7 +16,7 @@ public class ModConfigScreen extends FabricConfigListScreen {
 
     public ModConfigScreen(Screen parent) {
         super(HarvestSeason.MOD_ID, ModRegistry.COB_ITEM.get().asItem().getDefaultInstance(),
-                Component.literal(ChatFormatting.GOLD + "Haunted Harvest Configs"),
+                Component.literal(ChatFormatting.GOLD + "Harvest Season Configs"),
                 new ResourceLocation("textures/block/cracked_stone_bricks.png"),
                 parent, ModConfigs.SPEC);
     }

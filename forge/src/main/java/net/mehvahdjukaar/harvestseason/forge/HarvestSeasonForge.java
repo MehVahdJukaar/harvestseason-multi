@@ -1,14 +1,9 @@
-package net.mehvahdjukaar.hauntedharvest.forge;
+package net.mehvahdjukaar.harvestseason.forge;
 
 import net.mehvahdjukaar.harvestseason.HarvestSeason;
 import net.mehvahdjukaar.harvestseason.reg.ClientRegistry;
 import net.mehvahdjukaar.moonlight.api.platform.PlatformHelper;
 import net.minecraft.world.InteractionResult;
-import net.minecraft.world.entity.Entity;
-import net.minecraft.world.entity.EquipmentSlot;
-import net.minecraft.world.item.Item;
-import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.level.block.Block;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.TagsUpdatedEvent;
 import net.minecraftforge.event.entity.player.PlayerInteractEvent;

@@ -8,7 +8,7 @@ license="All rights reserved"
 # The modid of the mod
 modId="harvestseason" #mandatory
 version = "${version}"
-displayName="Haunted Harvest" #mandatory
+displayName="Harvest Season" #mandatory
 logoFile="icon.png" #optional
 credits="MehVahdJukaar, Plantkillable" #optional
 authors="MehVahdJukaar, Plantkillable" #optional

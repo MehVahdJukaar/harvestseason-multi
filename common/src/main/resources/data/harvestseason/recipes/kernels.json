@@ -2,7 +2,7 @@
   "type": "minecraft:crafting_shapeless",
   "ingredients": [
     {
-      "item": "harvestseason:corn"
+      "tag": "forge:crops/corn"
     }
   ],
   "result": {

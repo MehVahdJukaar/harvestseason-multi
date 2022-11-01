@@ -1,4 +1,4 @@
-package net.mehvahdjukaar.harvestseason.integration.fabric.modMenu;
+package net.mehvahdjukaar.harvestseason.integration.fabric.mod_menu;
 
 import com.terraformersmc.modmenu.api.ConfigScreenFactory;
 import com.terraformersmc.modmenu.api.ModMenuApi;
