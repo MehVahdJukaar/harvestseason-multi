@@ -14,7 +14,6 @@ import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.block.BlockRenderDispatcher;
 import net.minecraft.client.renderer.block.model.ItemTransforms;
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.state.BlockState;
 
@@ -31,12 +30,15 @@ public class CarvedPumpkinItemRenderer extends ItemStackRenderer {
         matrixStackIn.pushPose();
 
         BlockRenderDispatcher blockRenderer = Minecraft.getInstance().getBlockRenderer();
-        if(stack.getItem() == ModRegistry.MOD_JACK_O_LANTERN_ITEM.get()) {
+        boolean lit;
+        if (stack.getItem() == ModRegistry.MOD_JACK_O_LANTERN_ITEM.get()) {
+            lit = true;
             var model = ClientPlatformHelper.getModel(blockRenderer.getBlockModelShaper().getModelManager(),
                     ClientRegistry.JACK_O_LANTERN_FRAME);
             blockRenderer.getModelRenderer().renderModel(matrixStackIn.last(), bufferIn.getBuffer(ItemBlockRenderTypes.getRenderType(LANTERN_STATE, false)),
                     LANTERN_STATE, model, 1, 1, 1, combinedLightIn, combinedOverlayIn);
-        }else{
+        } else {
+            lit = false;
             var model = ClientPlatformHelper.getModel(blockRenderer.getBlockModelShaper().getModelManager(),
                     ClientRegistry.PUMPKIN_FRAME);
             blockRenderer.getModelRenderer().renderModel(matrixStackIn.last(), bufferIn.getBuffer(ItemBlockRenderTypes.getRenderType(PUMPKIN_STATE, false)),
@@ -48,7 +50,7 @@ public class CarvedPumpkinItemRenderer extends ItemStackRenderer {
         if (com != null && com.contains("Pixels")) {
             packed = com.getLongArray("Pixels");
         }
-        var blackboard = CarvingManager.getInstance(CarvingManager.Key.of(packed));
+        var blackboard = CarvingManager.getInstance(CarvingManager.Key.of(packed, lit));
         VertexConsumer builder = bufferIn.getBuffer(blackboard.getRenderType());
 
         int lu = combinedLightIn & '\uffff';
