@@ -176,30 +176,6 @@ public class CarvingManager {
             if (texture != null) this.texture.close();
             if (textureLocation != null) TEXTURE_MANAGER.release(textureLocation);
         }
-
-        //helper methods
-        private int getColoredPixel(boolean i, int x, int y) {
-            int offset = i ? 16 : 0;
-            int tint = 1;//BlackboardBlock.colorFromByte(i);
-            TextureAtlasSprite sprite = ClientRegistry.CARVED_PUMPKIN_BACKGROUND.sprite();
-            return getTintedColor(sprite, x, y, offset, tint);
-        }
-
-
-        private int getTintedColor(TextureAtlasSprite sprite, int x, int y, int offset, int tint) {
-            if (sprite == null || sprite.getFrameCount() == 0) return -1;
-            int tintR = tint >> 16 & 255;
-            int tintG = tint >> 8 & 255;
-            int tintB = tint & 255;
-
-            int pixel = ClientPlatformHelper.getPixelRGBA(sprite, 0, Math.min(sprite.getWidth() - 1, x + offset), Math.min(sprite.getHeight() - 1, y));
-
-            // this is in 0xAABBGGRR format, not the usual 0xAARRGGBB.
-            int totalB = pixel >> 16 & 255;
-            int totalG = pixel >> 8 & 255;
-            int totalR = pixel & 255;
-            return NativeImage.combine(255, totalB * tintB / 255, totalG * tintG / 255, totalR * tintR / 255);
-        }
     }
 
 }

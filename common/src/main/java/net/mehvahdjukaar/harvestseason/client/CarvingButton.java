@@ -84,7 +84,6 @@ public class CarvingButton extends GuiComponent implements Widget, GuiEventListe
     public void onClick(double mouseX, double mouseY) {
         this.carved = !this.carved;
         this.onPress.onPress(this.u, this.v, this.carved);
-
     }
 
     public void onRelease(double mouseX, double mouseY) {

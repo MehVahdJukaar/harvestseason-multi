@@ -31,10 +31,10 @@ public class CornBaseBlock extends CropBlock {
     public static final int MAX_AGE = 3;
     public static final IntegerProperty AGE = BlockStateProperties.AGE_3;
     private static final VoxelShape[] SHAPE_BY_AGE = new VoxelShape[]{
-            Block.box(0.0, 0.0, 0.0, 16.0, 2.0, 16.0),
-            Block.box(0.0, 0.0, 0.0, 16.0, 4.0, 16.0),
-            Block.box(0.0, 0.0, 0.0, 16.0, 6.0, 16.0),
-            Block.box(0.0, 0.0, 0.0, 16.0, 8.0, 16.0)};
+            Block.box(6, 0.0, 6, 10.0, 4.0, 10.0),
+            Block.box(5.0, 0.0, 5.0, 11.0, 8.0, 11.0),
+            Block.box(3.0, 0.0, 3.0, 13.0, 12.0, 13.0),
+            Block.box(1.0, 0.0, 1.0, 15.0, 16.0, 15.0)};
 
 
     @Override
@@ -43,6 +43,17 @@ public class CornBaseBlock extends CropBlock {
             if (!level.getBlockState(pos.above()).is(ModRegistry.CORN_MIDDLE.get())) return false;
         }
         return super.canSurvive(state, level, pos);
+    }
+
+    public boolean canGrowUp(BlockGetter worldIn, BlockPos downPos) {
+        BlockState state = worldIn.getBlockState(downPos.above());
+        return state.getBlock() instanceof CornBaseBlock || state.getMaterial().isReplaceable();
+    }
+    //TODO: figure out bonemeal
+    //for bonemeal
+    @Override
+    public boolean isValidBonemealTarget(BlockGetter worldIn, BlockPos pos, BlockState state, boolean isClient) {
+        return !this.isMaxAge(state);
     }
 
     // Tick function

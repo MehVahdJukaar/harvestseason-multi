@@ -4,6 +4,7 @@ import com.mojang.datafixers.util.Pair;
 import net.mehvahdjukaar.harvestseason.HarvestSeason;
 import net.mehvahdjukaar.harvestseason.reg.ModRegistry;
 import net.mehvahdjukaar.moonlight.api.platform.PlatformHelper;
+import net.mehvahdjukaar.moonlight.api.util.math.Vec2i;
 import net.minecraft.advancements.CriteriaTriggers;
 import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
@@ -34,16 +35,16 @@ public class ModCarvedPumpkinBlock extends CarvedPumpkinBlock implements EntityB
         super(properties);
     }
 
-    public static Pair<Integer, Integer> getHitSubPixel(BlockHitResult hit) {
-        Vec3 v2 = hit.getLocation();
-        Vec3 v = v2.yRot((float) ((hit.getDirection().toYRot()) * Math.PI / 180f));
+    public static Vec2i getHitSubPixel(BlockHitResult hit) {
+        Vec3 pos = hit.getLocation();
+        Vec3 v = pos.yRot((float) ((hit.getDirection().toYRot()) * Math.PI / 180f));
         double fx = ((v.x % 1) * 16);
         if (fx < 0) fx += 16;
         int x = Mth.clamp((int) fx, -15, 15);
 
         int y = 15 - (int) Mth.clamp(Math.abs((v.y % 1) * 16), 0, 15);
-        if (v2.y < 0) y = 15 - y; //crappy logic
-        return new Pair<>(x, y);
+        if (pos.y < 0) y = 15 - y; //crappy logic
+        return new Vec2i(x, y);
     }
 
     public static boolean isCarverItem(ItemStack stack) {
@@ -89,9 +90,9 @@ public class ModCarvedPumpkinBlock extends CarvedPumpkinBlock implements EntityB
             if (mode != CarveMode.NONE) {
                 if (hit.getDirection() == state.getValue(FACING) && mode.canManualDraw() && isCarverItem(stack)) {
 
-                    Pair<Integer, Integer> pair = getHitSubPixel(hit);
-                    int x = pair.getFirst();
-                    int y = pair.getSecond();
+                    Vec2i v = getHitSubPixel(hit);
+                    int x = v.x();
+                    int y = v.y();
 
                     te.setPixel(x, y, !te.getPixel(x, y));
                     te.setChanged();

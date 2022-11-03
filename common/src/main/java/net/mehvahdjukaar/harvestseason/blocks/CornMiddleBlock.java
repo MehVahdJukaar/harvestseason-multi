@@ -28,10 +28,9 @@ public class CornMiddleBlock extends CropBlock {
     public static final int MAX_AGE = 2;
     public static final IntegerProperty AGE = BlockStateProperties.AGE_2;
     private static final VoxelShape[] SHAPE_BY_AGE = new VoxelShape[]{
-            Block.box(0.0, 0.0, 0.0, 16.0, 2.0, 16.0),
-            Block.box(0.0, 0.0, 0.0, 16.0, 4.0, 16.0),
-            Block.box(0.0, 0.0, 0.0, 16.0, 6.0, 16.0),
-            Block.box(0.0, 0.0, 0.0, 16.0, 8.0, 16.0)};
+            Block.box(1, 0.0, 1, 15.0, 5.0, 15.0),
+            Block.box(1, 0.0, 1, 15.0, 11.0, 15.0),
+            Block.box(1, 0.0, 1, 15.0, 16.0, 15.0)};
 
 
     public CornMiddleBlock(Properties properties) {
@@ -44,6 +43,8 @@ public class CornMiddleBlock extends CropBlock {
         if (getAge(state) == getMaxAge()) {
             if (!level.getBlockState(pos.above()).is(ModRegistry.CORN_TOP.get())) return false;
         }
+        BlockState below = level.getBlockState(pos.below());
+        if (!(below.getBlock() instanceof CornBaseBlock base) || !base.isMaxAge(below)) return false;
         return super.canSurvive(state, level, pos);
     }
 
@@ -96,8 +97,6 @@ public class CornMiddleBlock extends CropBlock {
     protected int getBonemealAgeIncrease(Level level) {
         return super.getBonemealAgeIncrease(level) / 3;
     }
-
-
 
 
     @Override
