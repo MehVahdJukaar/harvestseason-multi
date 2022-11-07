@@ -1,7 +1,7 @@
 package net.mehvahdjukaar.harvestseason.blocks;
 
 import net.mehvahdjukaar.harvestseason.HarvestSeason;
-import net.mehvahdjukaar.harvestseason.compat.SuppCompat;
+import net.mehvahdjukaar.harvestseason.integration.SuppCompat;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;

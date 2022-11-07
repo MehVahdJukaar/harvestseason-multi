@@ -1,0 +1,9 @@
+{
+  "type": "minecraft:smoking",
+  "ingredient": {
+    "tag": "c:seeds/corn"
+  },
+  "result": "harvestseason:popcorn",
+  "experience": 0.35,
+  "cookingtime": 100
+}

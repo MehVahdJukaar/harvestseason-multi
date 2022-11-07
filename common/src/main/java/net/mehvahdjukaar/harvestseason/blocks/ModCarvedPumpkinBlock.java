@@ -1,12 +1,11 @@
 package net.mehvahdjukaar.harvestseason.blocks;
 
-import com.mojang.datafixers.util.Pair;
 import net.mehvahdjukaar.harvestseason.HarvestSeason;
 import net.mehvahdjukaar.harvestseason.reg.ModRegistry;
-import net.mehvahdjukaar.moonlight.api.platform.PlatformHelper;
 import net.mehvahdjukaar.moonlight.api.util.math.Vec2i;
 import net.minecraft.advancements.CriteriaTriggers;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.Registry;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvents;
@@ -48,7 +47,8 @@ public class ModCarvedPumpkinBlock extends CarvedPumpkinBlock implements EntityB
     }
 
     public static boolean isCarverItem(ItemStack stack) {
-        return PlatformHelper.getPlatform().isFabric() ? stack.getItem() instanceof SwordItem : stack.is(HarvestSeason.CARVERS);
+        return (Registry.ITEM.getTag(HarvestSeason.CARVERS).isPresent() && stack.is(HarvestSeason.CARVERS) ||
+                stack.getItem() instanceof SwordItem);
     }
 
     @Override

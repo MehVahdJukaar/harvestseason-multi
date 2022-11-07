@@ -1,7 +1,7 @@
 {
   "type": "minecraft:campfire_cooking",
   "ingredient": {
-    "item": "harvestseason:kernels"
+    "tag": "forge:seeds/corn"
   },
   "result": "harvestseason:popcorn",
   "experience": 0.35,

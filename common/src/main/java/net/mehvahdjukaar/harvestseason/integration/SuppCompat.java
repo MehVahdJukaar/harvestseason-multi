@@ -1,4 +1,4 @@
-package net.mehvahdjukaar.harvestseason.compat;
+package net.mehvahdjukaar.harvestseason.integration;
 
 import net.mehvahdjukaar.supplementaries.common.items.CandyItem;
 import net.minecraft.world.entity.LivingEntity;

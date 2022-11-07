@@ -1,9 +1,9 @@
 {
   "type": "minecraft:smoking",
   "ingredient": {
-    "item": "harvestseason:kernels"
+    "tag": "c:crops/corn"
   },
-  "result": "harvestseason:popcorn",
+  "result": "harvestseason:corn_on_the_cob",
   "experience": 0.35,
   "cookingtime": 100
 }

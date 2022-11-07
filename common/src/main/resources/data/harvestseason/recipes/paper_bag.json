@@ -1,15 +1,17 @@
 {
-  "type": "minecraft:crafting_shapeless",
-  "ingredients": [
-    {
-      "item": "harvestseason:kernels"
-    },
-    {
-      "item": "minecraft:sugar"
-    }
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "   ",
+    "1 1",
+    " 1 "
   ],
+  "key": {
+    "1": {
+      "item": "minecraft:paper"
+    }
+  },
   "result": {
-    "item": "harvestseason:candy_corn",
-    "count": 3
+    "item": "harvestseason:paper_bag",
+    "count": 1
   }
 }

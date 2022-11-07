@@ -22,9 +22,9 @@ public class ClientRegistry {
     public static final Material CARVED_PUMPKIN_BACKGROUND = new Material(LOCATION_BLOCKS, HarvestSeason.res("block/carved_pumpkin_background"));
     public static final Material CARVED_PUMPKIN_SHADE = new Material(LOCATION_BLOCKS, HarvestSeason.res("block/carved_pumpkin_shade"));
 
-    public static final Material JACK_O_LANTERN_BACKGROUND = new Material(LOCATION_BLOCKS,HarvestSeason.res("block/jack_o_lantern_background"));
-    public static final Material JACK_O_LANTERN_SHADE_1 =new Material(LOCATION_BLOCKS, HarvestSeason.res("block/jack_o_lantern_shade_1"));
-    public static final Material JACK_O_LANTERN_SHADE_2 =new Material(LOCATION_BLOCKS, HarvestSeason.res("block/jack_o_lantern_shade_2"));
+    public static final Material JACK_O_LANTERN_BACKGROUND = new Material(LOCATION_BLOCKS, HarvestSeason.res("block/jack_o_lantern_background"));
+    public static final Material JACK_O_LANTERN_SHADE_1 = new Material(LOCATION_BLOCKS, HarvestSeason.res("block/jack_o_lantern_shade_1"));
+    public static final Material JACK_O_LANTERN_SHADE_2 = new Material(LOCATION_BLOCKS, HarvestSeason.res("block/jack_o_lantern_shade_2"));
 
     public static final Material PUMPKIN_HIGHLIGHT = new Material(LOCATION_BLOCKS, HarvestSeason.res("block/pumpkin_highlight"));
     public static final Material PUMPKIN = new Material(LOCATION_BLOCKS, new ResourceLocation("block/pumpkin_side"));
@@ -45,8 +45,6 @@ public class ClientRegistry {
     }
 
     private static void registerTextures(ClientPlatformHelper.AtlasTextureEvent event) {
-        //event.addSprite(PUMPKIN_HIGHLIGHT_TEXTURE);
-        //event.addSprite(PUMPKIN_BACKGROUND_TEXTURE);
         event.addSprite(CARVED_PUMPKIN_BACKGROUND.texture());
         event.addSprite(CARVED_PUMPKIN_SHADE.texture());
         event.addSprite(JACK_O_LANTERN_SHADE_1.texture());
@@ -74,5 +72,7 @@ public class ClientRegistry {
         ClientPlatformHelper.registerRenderType(ModRegistry.CORN_BASE.get(), RenderType.cutout());
         ClientPlatformHelper.registerRenderType(ModRegistry.CORN_MIDDLE.get(), RenderType.cutout());
         ClientPlatformHelper.registerRenderType(ModRegistry.CORN_TOP.get(), RenderType.cutout());
+        ClientPlatformHelper.registerRenderType(ModRegistry.MOD_JACK_O_LANTERN.get(), RenderType.cutout());
+        ClientPlatformHelper.registerRenderType(ModRegistry.MOD_CARVED_PUMPKIN.get(), RenderType.cutout());
     }
 }

@@ -1,11 +1,14 @@
 {
   "loader": "harvestseason:carved_pumpkin",
+  "render_type": "cutout",
   "model": {
-    "parent": "harvestseason:block/pumpkin_frame",
+    "parent": "harvestseason:block/pumpkin_frame_lit",
+    "render_type": "cutout",
     "textures": {
 		"side": "block/pumpkin_side",
 		"background": "harvestseason:block/jack_o_lantern_background",
 		"3": "harvestseason:block/jack_o_lantern_top",
+		"top_overlay": "harvestseason:block/jack_o_lantern_top_glow",
 		"4": "block/pumpkin_top",
 		"particle": "block/pumpkin_side"
     }
@@ -14,6 +17,7 @@
 	  "side": "block/pumpkin_side",
 	  "background": "harvestseason:block/jack_o_lantern_background",
 	  "3": "harvestseason:block/jack_o_lantern_top",
+	  "top_overlay": "harvestseason:block/jack_o_lantern_top_glow",
 	  "4": "block/pumpkin_top",
 	  "particle": "block/pumpkin_side"
   }

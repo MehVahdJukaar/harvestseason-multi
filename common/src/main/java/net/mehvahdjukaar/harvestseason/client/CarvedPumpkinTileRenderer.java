@@ -76,15 +76,15 @@ public class CarvedPumpkinTileRenderer implements BlockEntityRenderer<ModCarvedP
                         matrixStackIn.mulPose(RotHlpr.XN90);
                         matrixStackIn.translate(-0.5, -0.5, 0.5);
 
-                        combinedLightIn = LevelRenderer.getLightColor(tile.getLevel(), pos.relative(dir));
+                        int frontLight = LevelRenderer.getLightColor(tile.getLevel(), pos.relative(dir));
 
-                        int lu = combinedLightIn & '\uffff';
-                        int lv = combinedLightIn >> 16 & '\uffff';
+                        int lu = frontLight & '\uffff';
+                        int lv = frontLight >> 16 & '\uffff';
 
-                        Pair<Integer, Integer> pair = ModCarvedPumpkinBlock.getHitSubPixel(blockHit);
+                        var pair = ModCarvedPumpkinBlock.getHitSubPixel(blockHit);
                         float p = 1 / 16f;
-                        float x = pair.getFirst() * p;
-                        float y = pair.getSecond() * p;
+                        float x = pair.x() * p;
+                        float y = pair.y() * p;
                         VertexConsumer builder2 = ClientRegistry.CARVING_OUTLINE.buffer(bufferIn, RenderType::entityCutout);
                         matrixStackIn.pushPose();
 
