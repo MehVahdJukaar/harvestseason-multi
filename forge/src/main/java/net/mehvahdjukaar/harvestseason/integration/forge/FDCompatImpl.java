@@ -27,8 +27,8 @@ public class FDCompatImpl {
             .effect(() -> new MobEffectInstance(ModEffects.NOURISHMENT.get(), 3600, 0), 1.0F)
             .build();
 
-    public static final Supplier<Block> CARROT_CRATE = regWithItem(
-            "carrot_crate", () ->
+    public static final Supplier<Block> CORN_CRATE = regWithItem(
+            "corn_crate", () ->
                     new Block(BlockBehaviour.Properties.of(Material.WOOD)
                             .strength(2.0F, 3.0F)
                             .sound(SoundType.WOOD)),

@@ -28,6 +28,7 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.EntityBlock;
 import net.minecraft.world.level.block.FireBlock;
+import net.minecraft.world.level.block.FlowerPotBlock;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.StateDefinition;
@@ -124,7 +125,7 @@ public class CandyBagBlock extends Block implements EntityBlock {
         int delta = 0;
         ItemStack held = player.getItemInHand(hand);
         if (player.isShiftKeyDown() && held.isEmpty()) {
-            ItemStack extracted = item.split(1);
+            ItemStack extracted = item.copy().split(1);
             if (!extracted.isEmpty()) {
                 Utils.swapItem(player, hand, extracted);
                 delta = -1;
@@ -264,6 +265,11 @@ public class CandyBagBlock extends Block implements EntityBlock {
     @Override
     public BlockEntity newBlockEntity(BlockPos pos, BlockState state) {
         return state.getValue(CONTENT) == Content.OTHER_CANDY ? new CandyBagTile(pos, state) : null;
+    }
+
+    @Override
+    public ItemStack getCloneItemStack(BlockGetter level, BlockPos pos, BlockState state) {
+        return ModRegistry.PAPER_BAG.get().asItem().getDefaultInstance();
     }
 
     public enum Content implements StringRepresentable {

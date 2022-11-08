@@ -54,6 +54,7 @@ public class HarvestSeason {
         if(FD_INSTALLED) FDCompat.init();
         NetworkHandler.registerMessages();
     }
+    //TODO: add corn bread
 
     //needs to be fired after configs are loaded
     public static void commonSetup() {

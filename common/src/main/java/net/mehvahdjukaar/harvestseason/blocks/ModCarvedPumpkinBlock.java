@@ -47,8 +47,7 @@ public class ModCarvedPumpkinBlock extends CarvedPumpkinBlock implements EntityB
     }
 
     public static boolean isCarverItem(ItemStack stack) {
-        return (Registry.ITEM.getTag(HarvestSeason.CARVERS).isPresent() && stack.is(HarvestSeason.CARVERS) ||
-                stack.getItem() instanceof SwordItem);
+        return stack.is(HarvestSeason.CARVERS) || stack.getItem() instanceof SwordItem;
     }
 
     @Override

@@ -25,7 +25,7 @@ import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.shapes.CollisionContext;
 import net.minecraft.world.phys.shapes.VoxelShape;
 
-public class CornTobBlock extends CropBlock implements IBeeGrowable {
+public class CornTobBlock extends AbstractCornBlock {
 
     public static final int MAX_AGE = 1;
     public static final IntegerProperty AGE = BlockStateProperties.AGE_1;
@@ -38,6 +38,11 @@ public class CornTobBlock extends CropBlock implements IBeeGrowable {
     }
 
     @Override
+    protected Block getTopBlock() {
+        return null;
+    }
+
+    @Override
     public boolean canSurvive(BlockState state, LevelReader level, BlockPos pos) {
         BlockState below = level.getBlockState(pos.below());
         if (!(below.getBlock() instanceof CornMiddleBlock base) || !base.isMaxAge(below)) return false;
@@ -45,33 +50,8 @@ public class CornTobBlock extends CropBlock implements IBeeGrowable {
     }
 
     @Override
-    public boolean isRandomlyTicking(BlockState state) {
-        return !isMaxAge(state);
-    }
-
-    @Override
-    public void randomTick(BlockState state, ServerLevel level, BlockPos pos, RandomSource random) {
-        if (!PlatformHelper.isAreaLoaded(level, pos, 1))
-            return; // Forge: prevent loading unloaded chunks when checking neighbor's light
-        if (level.getRawBrightness(pos, 0) >= 9) {
-            if (this.isValidBonemealTarget(level, pos, state, level.isClientSide)) {
-                float f = getGrowthSpeed(this, level, pos);
-                if (ForgeHelper.onCropsGrowPre(level, pos, state, random.nextInt((int) (25.0F / f) + 1) == 0)) {
-                    growCropBy(level, pos, state, 1);
-                    ForgeHelper.onCropsGrowPost(level, pos, state);
-                }
-            }
-        }
-    }
-
-    @Override
     public IntegerProperty getAgeProperty() {
         return AGE;
-    }
-
-    @Override
-    protected void createBlockStateDefinition(StateDefinition.Builder<Block, BlockState> builder) {
-        builder.add(AGE);
     }
 
     @Override
@@ -82,16 +62,6 @@ public class CornTobBlock extends CropBlock implements IBeeGrowable {
     @Override
     public int getMaxAge() {
         return MAX_AGE;
-    }
-
-    @Override
-    protected ItemLike getBaseSeedId() {
-        return ModRegistry.CORN_SEEDS.get();
-    }
-
-    @Override
-    protected int getBonemealAgeIncrease(Level level) {
-        return super.getBonemealAgeIncrease(level) / 3;
     }
 
     @Override
@@ -107,27 +77,5 @@ public class CornTobBlock extends CropBlock implements IBeeGrowable {
     @Override
     protected boolean mayPlaceOn(BlockState state, BlockGetter level, BlockPos pos) {
         return state.is(ModRegistry.CORN_MIDDLE.get());
-    }
-
-    @Override
-    public void growCrops(Level level, BlockPos pos, BlockState state) {
-        growCropBy(level, pos, state, this.getBonemealAgeIncrease(level));
-    }
-
-    public void growCropBy(Level level, BlockPos pos, BlockState state, int increment) {
-        int newAge = this.getAge(state) + increment;
-        int maxAge = this.getMaxAge();
-        if (newAge <= maxAge) {
-            if (newAge == maxAge) {
-                level.setBlock(pos.above(), ModRegistry.CORN_MIDDLE.get().defaultBlockState(), 2);
-            }
-            level.setBlock(pos, getStateForAge(newAge), 2);
-        }
-    }
-
-    @Override
-    public boolean getPollinated(Level level, BlockPos pos, BlockState state) {
-        growCropBy(level, pos, state, 1);
-        return true;
     }
 }
