@@ -45,7 +45,9 @@ public class CornTobBlock extends AbstractCornBlock {
     @Override
     public boolean canSurvive(BlockState state, LevelReader level, BlockPos pos) {
         BlockState below = level.getBlockState(pos.below());
-        if (!(below.getBlock() instanceof CornMiddleBlock base) || !base.isMaxAge(below)) return false;
+        if (!(below.getBlock() instanceof CornMiddleBlock base) || !base.isMaxAge(below)){
+            return false;
+        }
         return super.canSurvive(state, level, pos);
     }
 

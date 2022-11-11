@@ -33,7 +33,9 @@ public class CornBaseBlock extends AbstractCornBlock {
     @Override
     public boolean canSurvive(BlockState state, LevelReader level, BlockPos pos) {
         if (getAge(state) == getMaxAge()) {
-            if (!level.getBlockState(pos.above()).is(getTopBlock())) return false;
+            if (!level.getBlockState(pos.above()).is(getTopBlock())){
+                return false;
+            }
         }
         return super.canSurvive(state, level, pos);
     }

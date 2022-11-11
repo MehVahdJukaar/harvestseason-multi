@@ -36,7 +36,7 @@ public abstract class AbstractCornBlock extends CropBlock implements IBeeGrowabl
     public void randomTick(BlockState state, ServerLevel level, BlockPos pos, RandomSource random) {
         if (!PlatformHelper.isAreaLoaded(level, pos, 1))
             return; // Forge: prevent loading unloaded chunks when checking neighbor's light
-        if (level.getRawBrightness(pos, 0) >= 9 && level.random.nextFloat()<0.6) {
+        if (level.getRawBrightness(pos, 0) >= 9 && level.random.nextFloat() < 0.6) {
             if (this.isValidBonemealTarget(level, pos, state, level.isClientSide)) {
 
                 float f = getGrowthSpeed(this, level, pos);
@@ -49,6 +49,7 @@ public abstract class AbstractCornBlock extends CropBlock implements IBeeGrowabl
     }
 
     public void growCropBy(Level level, BlockPos pos, BlockState state, int increment) {
+        if (increment <= 0) return;
         int newAge = this.getAge(state) + increment;
         int maxAge = this.getMaxAge();
         if (newAge > maxAge) {
@@ -90,7 +91,8 @@ public abstract class AbstractCornBlock extends CropBlock implements IBeeGrowabl
     public boolean canGrowUp(BlockGetter worldIn, BlockPos pos) {
         BlockPos above = pos.above();
         BlockState state = worldIn.getBlockState(above);
-        return state.getBlock() instanceof AbstractCornBlock cb && cb.canGrowUp(worldIn, above) || state.getMaterial().isReplaceable();
+        return state.getBlock() instanceof AbstractCornBlock cb && cb.canGrowUp(worldIn, above) ||
+                (this.getTopBlock() != null && state.getMaterial().isReplaceable());
     }
 
     @Override

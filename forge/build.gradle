@@ -157,7 +157,7 @@ dependencies {
     modCompileOnly("curse.maven:serene-seasons-291874:3926300")
     modCompileOnly("curse.maven:model-gap-fix-676136:4024855")
     modImplementation("net.mehvahdjukaar:moonlight-forge:${project.moonlight_version}")
-    modImplementation("net.mehvahdjukaar:supplementaries-forge:${project.supplementaries_version}")
+    modCompileOnly("net.mehvahdjukaar:supplementaries-forge:${project.supplementaries_version}")
 
     modImplementation("curse.maven:farmers-delight-398521:3999157")
     modImplementation("curse.maven:jei-238222:3928388")
