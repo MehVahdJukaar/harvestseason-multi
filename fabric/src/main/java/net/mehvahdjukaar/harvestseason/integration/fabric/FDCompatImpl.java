@@ -3,6 +3,7 @@ package net.mehvahdjukaar.harvestseason.integration.fabric;
 import com.nhoryzon.mc.farmersdelight.FarmersDelightMod;
 import com.nhoryzon.mc.farmersdelight.item.ConsumableItem;
 import com.nhoryzon.mc.farmersdelight.registry.EffectsRegistry;
+import net.mehvahdjukaar.harvestseason.reg.ModFood;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.food.FoodProperties;
 import net.minecraft.world.item.Item;
@@ -34,7 +35,10 @@ public class FDCompatImpl {
                             .sound(SoundType.WOOD)),
             FarmersDelightMod.ITEM_GROUP
     );
-
+    public static final Supplier<Item> CORNBREAD = regItem(
+            "cornbread", () -> new ConsumableItem(new Item.Properties().tab(FarmersDelightMod.ITEM_GROUP)
+                    .food(ModFood.CORNBREAD), false)
+    );
     public static final Supplier<Item> SUCCOTASH = regItem(
             "succotash", () -> new ConsumableItem(bowlFoodItem(SUCCOTASH_FOOD), true)
     );

@@ -1,5 +1,6 @@
 package net.mehvahdjukaar.harvestseason.integration.forge;
 
+import net.mehvahdjukaar.harvestseason.reg.ModFood;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.food.FoodProperties;
 import net.minecraft.world.item.Item;
@@ -34,9 +35,14 @@ public class FDCompatImpl {
                             .sound(SoundType.WOOD)),
             FarmersDelight.CREATIVE_TAB
     );
+    public static final Supplier<Item> CORNBREAD = regItem(
+            "cornbread", () -> new ConsumableItem(ModItems.foodItem(ModFood.CORNBREAD), false)
+    );
 
     public static final Supplier<Item> SUCCOTASH = regItem(
             "succotash", () -> new ConsumableItem(ModItems.bowlFoodItem(SUCCOTASH_FOOD), true)
     );
+
+
 
 }

@@ -2,12 +2,18 @@
   "type": "minecraft:crafting_shapeless",
   "ingredients": [
     {
-      "item": "harvestseason:corn_crate"
+      "tag": "forge:crops/corn"
+    },
+    {
+      "item": "minecraft:bread"
+    },
+    {
+      "item": "minecraft:bread"
     }
   ],
   "result": {
-    "item": "harvestseason:corn",
-    "count": 9
+    "item": "harvestseason:cornbread",
+    "count": 3
   },
   "conditions": [
     {
