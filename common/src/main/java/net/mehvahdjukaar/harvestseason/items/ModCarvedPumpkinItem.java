@@ -1,11 +1,15 @@
 package net.mehvahdjukaar.harvestseason.items;
 
+import dev.architectury.injectables.annotations.PlatformOnly;
 import net.mehvahdjukaar.harvestseason.client.CarvedPumpkinItemRenderer;
 import net.mehvahdjukaar.harvestseason.client.CarvingManager;
 import net.mehvahdjukaar.harvestseason.reg.ModRegistry;
 import net.mehvahdjukaar.moonlight.api.client.ICustomItemRendererProvider;
 import net.mehvahdjukaar.moonlight.api.client.ItemStackRenderer;
+import net.minecraft.client.renderer.entity.layers.SnowGolemHeadLayer;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.inventory.tooltip.TooltipComponent;
 import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.ItemStack;
@@ -33,5 +37,10 @@ public class ModCarvedPumpkinItem extends BlockItem implements ICustomItemRender
     @Override
     public Supplier<ItemStackRenderer> getRendererFactory() {
         return CarvedPumpkinItemRenderer::new;
+    }
+
+    @PlatformOnly(PlatformOnly.FORGE)
+    public boolean canEquip(ItemStack stack, EquipmentSlot armorType, Entity entity) {
+        return armorType == EquipmentSlot.HEAD;
     }
 }

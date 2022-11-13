@@ -6,6 +6,7 @@
   "client": [
   ],
   "mixins": [
+    "SelfCarvedPumpkinItemMixin"
   ],
   "injectors": {
     "defaultRequire": 1

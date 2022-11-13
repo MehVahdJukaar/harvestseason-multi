@@ -50,8 +50,8 @@ public class CarvedPumpkinItemRenderer extends ItemStackRenderer {
         if (com != null && com.contains("Pixels")) {
             packed = com.getLongArray("Pixels");
         }
-        var blackboard = CarvingManager.getInstance(CarvingManager.Key.of(packed, lit));
-        VertexConsumer builder = bufferIn.getBuffer(blackboard.getRenderType());
+        var carving = CarvingManager.getInstance(CarvingManager.Key.of(packed, lit));
+        VertexConsumer builder = bufferIn.getBuffer(carving.getRenderType());
 
         int lu = combinedLightIn & '\uffff';
         int lv = combinedLightIn >> 16 & '\uffff';

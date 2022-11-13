@@ -1,5 +1,6 @@
 package net.mehvahdjukaar.harvestseason;
 
+import dev.architectury.injectables.annotations.ExpectPlatform;
 import net.mehvahdjukaar.harvestseason.blocks.ModCarvedPumpkinBlock;
 import net.mehvahdjukaar.harvestseason.integration.FDCompat;
 import net.mehvahdjukaar.harvestseason.network.NetworkHandler;
@@ -54,7 +55,6 @@ public class HarvestSeason {
         if(FD_INSTALLED) FDCompat.init();
         NetworkHandler.registerMessages();
     }
-    //TODO: add corn bread
 
     //needs to be fired after configs are loaded
     public static void commonSetup() {
@@ -76,7 +76,7 @@ public class HarvestSeason {
     public static InteractionResult onRightClickBlock(Player player, Level level, InteractionHand hand, BlockHitResult hit) {
         ItemStack stack = player.getItemInHand(hand);
         Direction direction = hit.getDirection();
-        if (direction == Direction.UP && isTopCarver(stack)) {
+        if (direction == Direction.UP && HSPlatformStuff.isTopCarver(stack)) {
             BlockPos pos = hit.getBlockPos();
             BlockState state = level.getBlockState(pos);
             if (state.is(Blocks.PUMPKIN)) {
@@ -103,8 +103,7 @@ public class HarvestSeason {
         return InteractionResult.PASS;
     }
 
-    private static boolean isTopCarver(ItemStack stack) {
-        return stack.getItem() instanceof ShearsItem || (!(stack.getItem() instanceof SwordItem) && stack.is(CARVERS));
-    }
+
+
 
 }

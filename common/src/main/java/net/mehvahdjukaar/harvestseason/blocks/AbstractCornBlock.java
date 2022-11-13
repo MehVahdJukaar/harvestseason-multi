@@ -85,14 +85,21 @@ public abstract class AbstractCornBlock extends CropBlock implements IBeeGrowabl
 
     @Override
     public boolean isValidBonemealTarget(BlockGetter worldIn, BlockPos pos, BlockState state, boolean isClient) {
-        return this.getAge(state) + 1 < this.getMaxAge() || this.canGrowUp(worldIn, pos);
-    }
-
-    public boolean canGrowUp(BlockGetter worldIn, BlockPos pos) {
-        BlockPos above = pos.above();
-        BlockState state = worldIn.getBlockState(above);
-        return state.getBlock() instanceof AbstractCornBlock cb && cb.canGrowUp(worldIn, above) ||
-                (this.getTopBlock() != null && state.getMaterial().isReplaceable());
+        int age = this.getAge(state);
+        int maxAge = this.getMaxAge();
+        if (age + 1 < maxAge) { //isn't max age or about to grow second stage
+            return true;
+        } else {
+            //if it can grow or place block above
+            BlockPos above = pos.above();
+            BlockState aboveState = worldIn.getBlockState(above);
+            if (age == maxAge) { //needs to grow
+                return aboveState.getBlock() instanceof AbstractCornBlock cb && cb.isValidBonemealTarget(worldIn, above, aboveState, false);
+            } else {
+                //place top
+                return this.getTopBlock() == null || aboveState.getMaterial().isReplaceable();
+            }
+        }
     }
 
     @Override

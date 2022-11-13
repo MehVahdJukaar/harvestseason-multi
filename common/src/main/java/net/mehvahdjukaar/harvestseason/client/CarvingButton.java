@@ -73,7 +73,9 @@ public class CarvingButton extends GuiComponent implements Widget, GuiEventListe
     }
 
 
-    private static void blitSprite(PoseStack matrixStack, int x, int y, int w, int h, int u, int v, int uW, int vH, TextureAtlasSprite sprite) {
+    @Deprecated(forRemoval = true)
+    private static void blitSprite(PoseStack matrixStack, int x, int y, int w, int h,
+                                   int u, int v, int uW, int vH, TextureAtlasSprite sprite) {
         RenderSystem.setShaderTexture(0, sprite.atlas().location());
         int width = (int) (sprite.getWidth() / (sprite.getU1() - sprite.getU0()));
         int height = (int) (sprite.getHeight() / (sprite.getV1() - sprite.getV0()));

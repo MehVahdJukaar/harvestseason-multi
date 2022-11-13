@@ -1,11 +1,11 @@
 package net.mehvahdjukaar.harvestseason.blocks;
 
+import net.mehvahdjukaar.harvestseason.HSPlatformStuff;
 import net.mehvahdjukaar.harvestseason.HarvestSeason;
 import net.mehvahdjukaar.harvestseason.reg.ModRegistry;
 import net.mehvahdjukaar.moonlight.api.util.math.Vec2i;
 import net.minecraft.advancements.CriteriaTriggers;
 import net.minecraft.core.BlockPos;
-import net.minecraft.core.Registry;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvents;
@@ -13,18 +13,29 @@ import net.minecraft.sounds.SoundSource;
 import net.minecraft.util.Mth;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
+import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.entity.animal.AbstractGolem;
+import net.minecraft.world.entity.animal.IronGolem;
+import net.minecraft.world.entity.animal.SnowGolem;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.*;
 import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.CarvedPumpkinBlock;
 import net.minecraft.world.level.block.EntityBlock;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.block.state.pattern.BlockInWorld;
+import net.minecraft.world.level.block.state.pattern.BlockPattern;
+import net.minecraft.world.level.block.state.pattern.BlockPatternBuilder;
+import net.minecraft.world.level.block.state.predicate.BlockStatePredicate;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.Vec3;
 
 import javax.annotation.Nullable;
+import java.util.function.Predicate;
 
 //TODO: IOwner protected
 public class ModCarvedPumpkinBlock extends CarvedPumpkinBlock implements EntityBlock {
@@ -124,7 +135,7 @@ public class ModCarvedPumpkinBlock extends CarvedPumpkinBlock implements EntityB
         return new ModCarvedPumpkinBlockTile(pPos, pState);
     }
 
-    public ItemStack getBlackboardItem(ModCarvedPumpkinBlockTile te) {
+    public ItemStack getItemWithNBT(ModCarvedPumpkinBlockTile te) {
         ItemStack itemstack = new ItemStack(this);
         if (!te.isEmpty()) {
             CompoundTag tag = te.savePixels(new CompoundTag());
@@ -138,8 +149,89 @@ public class ModCarvedPumpkinBlock extends CarvedPumpkinBlock implements EntityB
     @Override
     public ItemStack getCloneItemStack(BlockGetter level, BlockPos pos, BlockState state) {
         if (level.getBlockEntity(pos) instanceof ModCarvedPumpkinBlockTile te) {
-            return this.getBlackboardItem(te);
+            return this.getItemWithNBT(te);
         }
         return super.getCloneItemStack(level, pos, state);
     }
+
+    @Override
+    public void onPlace(BlockState state, Level level, BlockPos pos, BlockState oldState, boolean isMoving) {
+        if (!oldState.is(state.getBlock())) {
+            this.trySpawnGolemWithCustomPumpkin(level, pos);
+        }
+    }
+
+    protected void trySpawnGolemWithCustomPumpkin(Level level, BlockPos pos) {
+        BlockPattern.BlockPatternMatch blockPatternMatch = this.getOrCreateSnowGolemFull().find(level, pos);
+        if (blockPatternMatch != null) {
+            for (int i = 0; i < this.getOrCreateSnowGolemFull().getHeight(); ++i) {
+                BlockInWorld blockInWorld = blockPatternMatch.getBlock(0, i, 0);
+                level.setBlock(blockInWorld.getPos(), Blocks.AIR.defaultBlockState(), 2);
+                level.levelEvent(2001, blockInWorld.getPos(), Block.getId(blockInWorld.getState()));
+            }
+
+            SnowGolem snowGolem = EntityType.SNOW_GOLEM.create(level);
+            if(level.getBlockEntity(pos) instanceof ModCarvedPumpkinBlockTile tile) {
+                HSPlatformStuff.addPumpkinData(tile, snowGolem);
+            }
+            BlockPos blockPos = blockPatternMatch.getBlock(0, 2, 0).getPos();
+            spawnToLocation(level, blockPos, snowGolem);
+
+            for (int j = 0; j < this.getOrCreateSnowGolemFull().getHeight(); ++j) {
+                BlockInWorld blockInWorld2 = blockPatternMatch.getBlock(0, j, 0);
+                level.blockUpdated(blockInWorld2.getPos(), Blocks.AIR);
+            }
+        } else {
+            blockPatternMatch = this.getOrCreateIronGolemFull().find(level, pos);
+            if (blockPatternMatch != null) {
+                for (int i = 0; i < this.getOrCreateIronGolemFull().getWidth(); ++i) {
+                    for (int k = 0; k < this.getOrCreateIronGolemFull().getHeight(); ++k) {
+                        BlockInWorld blockInWorld3 = blockPatternMatch.getBlock(i, k, 0);
+                        level.setBlock(blockInWorld3.getPos(), Blocks.AIR.defaultBlockState(), 2);
+                        level.levelEvent(2001, blockInWorld3.getPos(), Block.getId(blockInWorld3.getState()));
+                    }
+                }
+
+                BlockPos blockPos2 = blockPatternMatch.getBlock(1, 2, 0).getPos();
+                IronGolem ironGolem = EntityType.IRON_GOLEM.create(level);
+                ironGolem.setPlayerCreated(true);
+                spawnToLocation(level, blockPos2, ironGolem);
+
+                for (int j = 0; j < this.getOrCreateIronGolemFull().getWidth(); ++j) {
+                    for (int l = 0; l < this.getOrCreateIronGolemFull().getHeight(); ++l) {
+                        BlockInWorld blockInWorld4 = blockPatternMatch.getBlock(j, l, 0);
+                        level.blockUpdated(blockInWorld4.getPos(), Blocks.AIR);
+                    }
+                }
+            }
+        }
+    }
+
+    private static void spawnToLocation(Level level, BlockPos blockPos2, AbstractGolem ironGolem) {
+        ironGolem.moveTo(blockPos2.getX() + 0.5, blockPos2.getY() + 0.05, blockPos2.getZ() + 0.5, 0.0F, 0.0F);
+        level.addFreshEntity(ironGolem);
+
+        for (ServerPlayer serverPlayer : level.getEntitiesOfClass(ServerPlayer.class, ironGolem.getBoundingBox().inflate(5.0))) {
+            CriteriaTriggers.SUMMONED_ENTITY.trigger(serverPlayer, ironGolem);
+        }
+    }
+
+    @org.jetbrains.annotations.Nullable
+    private BlockPattern snowGolemFull;
+
+    private static final Predicate<BlockState> PUMPKINS_PREDICATE = blockState -> blockState != null
+            && blockState.getBlock() instanceof ModCarvedPumpkinBlock;
+
+    private BlockPattern getOrCreateSnowGolemFull() {
+        if (this.snowGolemFull == null) {
+            this.snowGolemFull = BlockPatternBuilder.start()
+                    .aisle("^", "#", "#")
+                    .where('^', BlockInWorld.hasState(PUMPKINS_PREDICATE))
+                    .where('#', BlockInWorld.hasState(BlockStatePredicate.forBlock(Blocks.SNOW_BLOCK)))
+                    .build();
+        }
+
+        return this.snowGolemFull;
+    }
+
 }
