@@ -1,4 +1,4 @@
-package net.mehvahdjukaar.harvestseason.reg;
+package net.mehvahdjukaar.harvestseason.configs;
 
 import net.mehvahdjukaar.harvestseason.HarvestSeason;
 import net.mehvahdjukaar.harvestseason.blocks.ModCarvedPumpkinBlock;

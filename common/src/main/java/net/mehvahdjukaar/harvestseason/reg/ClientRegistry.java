@@ -11,6 +11,7 @@ import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.texture.TextureAtlas;
 import net.minecraft.client.resources.model.Material;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.level.block.Blocks;
 
 import static net.minecraft.client.renderer.texture.TextureAtlas.LOCATION_BLOCKS;
 
@@ -74,5 +75,6 @@ public class ClientRegistry {
         ClientPlatformHelper.registerRenderType(ModRegistry.CORN_TOP.get(), RenderType.cutout());
         ClientPlatformHelper.registerRenderType(ModRegistry.MOD_JACK_O_LANTERN.get(), RenderType.cutout());
         ClientPlatformHelper.registerRenderType(ModRegistry.MOD_CARVED_PUMPKIN.get(), RenderType.cutout());
+        ClientPlatformHelper.registerRenderType(Blocks.JACK_O_LANTERN, RenderType.cutout());
     }
 }

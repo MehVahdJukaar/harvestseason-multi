@@ -2,7 +2,7 @@ package net.mehvahdjukaar.harvestseason.blocks;
 
 import net.mehvahdjukaar.harvestseason.client.CarvingGui;
 import net.mehvahdjukaar.harvestseason.client.CarvingManager.Key;
-import net.mehvahdjukaar.harvestseason.reg.ModConfigs;
+import net.mehvahdjukaar.harvestseason.configs.ModConfigs;
 import net.mehvahdjukaar.harvestseason.reg.ModRegistry;
 import net.mehvahdjukaar.moonlight.api.block.IOwnerProtected;
 import net.mehvahdjukaar.moonlight.api.client.IScreenProvider;
@@ -14,6 +14,7 @@ import net.minecraft.core.Direction;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.protocol.game.ClientboundBlockEntityDataPacket;
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
@@ -217,4 +218,16 @@ public class ModCarvedPumpkinBlockTile extends BlockEntity implements IOwnerProt
         if (this.isJackOLantern) return ModConfigs.JACK_O_LANTERN_CARVE_MODE.get();
         return ModConfigs.PUMPKIN_CARVE_MODE.get();
     }
+
+    public ItemStack getItemWithNBT() {
+        ItemStack itemstack = new ItemStack(this.getBlockState().getBlock());
+        if (!this.isEmpty()) {
+            CompoundTag tag = this.savePixels(new CompoundTag());
+            if (!tag.isEmpty()) {
+                itemstack.addTagElement("BlockEntityTag", tag);
+            }
+        }
+        return itemstack;
+    }
+
 }

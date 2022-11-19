@@ -1,26 +1,24 @@
 package net.mehvahdjukaar.harvestseason.items.crafting;
 
+import net.mehvahdjukaar.harvestseason.HarvestSeason;
 import net.mehvahdjukaar.harvestseason.reg.ModRegistry;
-import net.mehvahdjukaar.moonlight.api.platform.ForgeHelper;
 import net.minecraft.core.NonNullList;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.inventory.CraftingContainer;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.Items;
 import net.minecraft.world.item.crafting.CustomRecipe;
 import net.minecraft.world.item.crafting.RecipeSerializer;
 import net.minecraft.world.level.Level;
-import net.minecraft.world.level.block.RepeaterBlock;
 
-import java.util.Optional;
-
-public class PumpkinDuplicateRecipe extends CustomRecipe {
-    public PumpkinDuplicateRecipe(ResourceLocation idIn) {
+public class ModCarvedPumpkinRecipe extends CustomRecipe {
+    public ModCarvedPumpkinRecipe(ResourceLocation idIn) {
         super(idIn);
     }
 
-    private boolean isDrawnBlackboard(ItemStack stack) {
+    private boolean isFilled(ItemStack stack) {
         CompoundTag tag = stack.getTagElement("BlockEntityTag");
         return tag != null && tag.contains("Pixels");
     }
@@ -34,22 +32,18 @@ public class PumpkinDuplicateRecipe extends CustomRecipe {
         for (int i = 0; i < inv.getContainerSize(); ++i) {
             ItemStack stack = inv.getItem(i);
             Item item = stack.getItem();
-            if (item == ModRegistry.MOD_CARVED_PUMPKIN.get().asItem()) {
-
-                if (isDrawnBlackboard(stack)) {
-                    if (itemstack != null) {
-                        return false;
-                    }
-
+            if (item == ModRegistry.MOD_CARVED_PUMPKIN.get().asItem() && itemstack == null) {
+                if (isFilled(stack)) {
                     itemstack = stack;
-                } else {
-                    if (itemstack1 != null) {
-                        return false;
-                    }
-
-                    itemstack1 = stack;
                 }
-            } else if (!stack.isEmpty()) return false;
+            }else if(item == Items.TORCH || stack.is(HarvestSeason.CARVABLE_PUMPKINS)){
+                if (itemstack1 != null) {
+                    return false;
+                }
+
+                itemstack1 = stack;
+            }
+            else if (!stack.isEmpty()) return false;
         }
 
         return itemstack != null && itemstack1 != null;
@@ -57,11 +51,17 @@ public class PumpkinDuplicateRecipe extends CustomRecipe {
 
     @Override
     public ItemStack assemble(CraftingContainer inv) {
+        boolean torch = false;
+
+        for (int i = 0; i < inv.getContainerSize(); ++i) {
+            if(inv.getItem(i).getItem() == Items.TORCH)torch = true;
+        }
         for (int i = 0; i < inv.getContainerSize(); ++i) {
             ItemStack stack = inv.getItem(i);
-            if (isDrawnBlackboard(stack)) {
-                ItemStack s = stack.copy();
+            if (isFilled(stack)) {
+                ItemStack s =(torch ? ModRegistry.MOD_JACK_O_LANTERN_ITEM : ModRegistry.MOD_CARVED_PUMPKIN_ITEM).get().getDefaultInstance();
                 s.setCount(1);
+                s.setTag(stack.getTag().copy());
                 return s;
             }
         }
@@ -75,13 +75,11 @@ public class PumpkinDuplicateRecipe extends CustomRecipe {
         for (int i = 0; i < stacks.size(); ++i) {
             ItemStack itemstack = inv.getItem(i);
             if (!itemstack.isEmpty()) {
-                Optional<ItemStack> container = ForgeHelper.getCraftingRemainingItem(itemstack);
-                if (container.isPresent()) {
-                    stacks.set(i, container.get());
-                } else if (itemstack.hasTag() && isDrawnBlackboard(itemstack)) {
+                if (isFilled(itemstack)) {
                     ItemStack copy = itemstack.copy();
                     copy.setCount(1);
                     stacks.set(i, copy);
+                    return stacks;
                 }
             }
         }
@@ -95,7 +93,7 @@ public class PumpkinDuplicateRecipe extends CustomRecipe {
 
     @Override
     public RecipeSerializer<?> getSerializer() {
-        return ModRegistry.PUMPKIN_DUPLICATE_RECIPE.get();
+        return ModRegistry.CARVED_PUMPKIN_RECIPE.get();
     }
 
 

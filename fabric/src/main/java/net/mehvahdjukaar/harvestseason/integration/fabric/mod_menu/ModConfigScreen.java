@@ -1,7 +1,7 @@
 package net.mehvahdjukaar.harvestseason.integration.fabric.mod_menu;
 
 import net.mehvahdjukaar.harvestseason.HarvestSeason;
-import net.mehvahdjukaar.harvestseason.reg.ModConfigs;
+import net.mehvahdjukaar.harvestseason.configs.ModConfigs;
 import net.mehvahdjukaar.harvestseason.reg.ModRegistry;
 import net.mehvahdjukaar.moonlight.api.client.gui.LinkButton;
 import net.mehvahdjukaar.moonlight.api.platform.configs.fabric.FabricConfigListScreen;

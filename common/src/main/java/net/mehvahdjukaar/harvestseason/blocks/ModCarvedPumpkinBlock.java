@@ -135,21 +135,10 @@ public class ModCarvedPumpkinBlock extends CarvedPumpkinBlock implements EntityB
         return new ModCarvedPumpkinBlockTile(pPos, pState);
     }
 
-    public ItemStack getItemWithNBT(ModCarvedPumpkinBlockTile te) {
-        ItemStack itemstack = new ItemStack(this);
-        if (!te.isEmpty()) {
-            CompoundTag tag = te.savePixels(new CompoundTag());
-            if (!tag.isEmpty()) {
-                itemstack.addTagElement("BlockEntityTag", tag);
-            }
-        }
-        return itemstack;
-    }
-
     @Override
     public ItemStack getCloneItemStack(BlockGetter level, BlockPos pos, BlockState state) {
         if (level.getBlockEntity(pos) instanceof ModCarvedPumpkinBlockTile te) {
-            return this.getItemWithNBT(te);
+            return te.getItemWithNBT();
         }
         return super.getCloneItemStack(level, pos, state);
     }
@@ -164,16 +153,18 @@ public class ModCarvedPumpkinBlock extends CarvedPumpkinBlock implements EntityB
     protected void trySpawnGolemWithCustomPumpkin(Level level, BlockPos pos) {
         BlockPattern.BlockPatternMatch blockPatternMatch = this.getOrCreateSnowGolemFull().find(level, pos);
         if (blockPatternMatch != null) {
+
+            SnowGolem snowGolem = EntityType.SNOW_GOLEM.create(level);
+            if(level.getBlockEntity(pos) instanceof ModCarvedPumpkinBlockTile tile) {
+                HSPlatformStuff.addPumpkinData(tile, snowGolem);
+            }
+
             for (int i = 0; i < this.getOrCreateSnowGolemFull().getHeight(); ++i) {
                 BlockInWorld blockInWorld = blockPatternMatch.getBlock(0, i, 0);
                 level.setBlock(blockInWorld.getPos(), Blocks.AIR.defaultBlockState(), 2);
                 level.levelEvent(2001, blockInWorld.getPos(), Block.getId(blockInWorld.getState()));
             }
 
-            SnowGolem snowGolem = EntityType.SNOW_GOLEM.create(level);
-            if(level.getBlockEntity(pos) instanceof ModCarvedPumpkinBlockTile tile) {
-                HSPlatformStuff.addPumpkinData(tile, snowGolem);
-            }
             BlockPos blockPos = blockPatternMatch.getBlock(0, 2, 0).getPos();
             spawnToLocation(level, blockPos, snowGolem);
 

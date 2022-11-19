@@ -25,10 +25,7 @@ import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.Level;
-import net.minecraft.world.level.block.Block;
-import net.minecraft.world.level.block.EntityBlock;
-import net.minecraft.world.level.block.FireBlock;
-import net.minecraft.world.level.block.FlowerPotBlock;
+import net.minecraft.world.level.block.*;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.StateDefinition;
@@ -185,7 +182,7 @@ public class CandyBagBlock extends Block implements EntityBlock {
     @Override
     public void neighborChanged(BlockState state, Level level, BlockPos pos, Block neighbor, BlockPos fromPos, boolean isMoving) {
         super.neighborChanged(state, level, pos, neighbor, fromPos, isMoving);
-        if (state.getValue(CONTENT) == Content.KERNELS && canCook(level.getBlockState(fromPos).getBlock())) {
+        if (state.getValue(CONTENT) == Content.KERNELS && canCook(level.getBlockState(fromPos))) {
             level.scheduleTick(pos, this, POPCORN_COOK_TIME);
         }
     }
@@ -193,7 +190,7 @@ public class CandyBagBlock extends Block implements EntityBlock {
     @Override
     public void tick(BlockState state, ServerLevel level, BlockPos pos, RandomSource random) {
         if (state.getValue(CONTENT) == Content.KERNELS) {
-            var canPop = Arrays.stream(Direction.values()).anyMatch(d -> canCook(level.getBlockState(pos.relative(d)).getBlock()));
+            var canPop = Arrays.stream(Direction.values()).anyMatch(d -> canCook(level.getBlockState(pos.relative(d))));
             if (canPop) {
                 popCorn(state, level, pos);
                 level.scheduleTick(pos, this, 3);
@@ -202,7 +199,7 @@ public class CandyBagBlock extends Block implements EntityBlock {
     }
 
     private static void schedulePopTickIfPossible(BlockState state, Level level, BlockPos pos) {
-        var canPop = Arrays.stream(Direction.values()).anyMatch(d -> canCook(level.getBlockState(pos.relative(d)).getBlock()));
+        var canPop = Arrays.stream(Direction.values()).anyMatch(d -> canCook(level.getBlockState(pos.relative(d))));
         if (canPop) {
             level.scheduleTick(pos, state.getBlock(), POPCORN_COOK_TIME);
         }
@@ -252,8 +249,9 @@ public class CandyBagBlock extends Block implements EntityBlock {
         return super.triggerEvent(state, level, pos, id, param);
     }
 
-    private static boolean canCook(Block neighbor) {
-        return neighbor.builtInRegistryHolder().is(BlockTags.CAMPFIRES) || neighbor instanceof FireBlock;
+    private static boolean canCook(BlockState neighbor) {
+        return (neighbor.is(BlockTags.CAMPFIRES) && neighbor.getValue(CampfireBlock.LIT))
+                || neighbor.getBlock() instanceof FireBlock;
     }
 
     @Override

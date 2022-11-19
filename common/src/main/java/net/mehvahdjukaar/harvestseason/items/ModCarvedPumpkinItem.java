@@ -10,10 +10,13 @@ import net.minecraft.client.renderer.entity.layers.SnowGolemHeadLayer;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EquipmentSlot;
+import net.minecraft.world.entity.monster.EnderMan;
+import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.tooltip.TooltipComponent;
 import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.Blocks;
 
 import java.util.Optional;
 import java.util.function.Supplier;
@@ -42,5 +45,10 @@ public class ModCarvedPumpkinItem extends BlockItem implements ICustomItemRender
     @PlatformOnly(PlatformOnly.FORGE)
     public boolean canEquip(ItemStack stack, EquipmentSlot armorType, Entity entity) {
         return armorType == EquipmentSlot.HEAD;
+    }
+
+    @PlatformOnly(PlatformOnly.FORGE)
+    public boolean isEnderMask(ItemStack stack, Player player, EnderMan enderMan) {
+        return true;
     }
 }

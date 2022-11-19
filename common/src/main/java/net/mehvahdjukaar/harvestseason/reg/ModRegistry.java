@@ -4,15 +4,11 @@ import net.mehvahdjukaar.harvestseason.HarvestSeason;
 import net.mehvahdjukaar.harvestseason.blocks.*;
 import net.mehvahdjukaar.harvestseason.items.ModCarvedPumpkinItem;
 import net.mehvahdjukaar.harvestseason.items.PaperBagItem;
-import net.mehvahdjukaar.harvestseason.items.crafting.JackOLanternRecipe;
-import net.mehvahdjukaar.harvestseason.items.crafting.PumpkinDuplicateRecipe;
+import net.mehvahdjukaar.harvestseason.items.crafting.ModCarvedPumpkinRecipe;
 import net.mehvahdjukaar.moonlight.api.item.WoodBasedBlockItem;
 import net.mehvahdjukaar.moonlight.api.platform.PlatformHelper;
 import net.mehvahdjukaar.moonlight.api.platform.RegHelper;
-import net.minecraft.core.Registry;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraft.world.effect.MobEffectInstance;
-import net.minecraft.world.food.FoodProperties;
 import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.CreativeModeTab;
 import net.minecraft.world.item.Item;
@@ -26,7 +22,6 @@ import net.minecraft.world.level.block.SoundType;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockBehaviour;
-import net.minecraft.world.level.material.Material;
 
 import java.util.function.Function;
 import java.util.function.Supplier;
@@ -39,11 +34,9 @@ public class ModRegistry {
     }
 
 
-    public static final Supplier<RecipeSerializer<PumpkinDuplicateRecipe>> PUMPKIN_DUPLICATE_RECIPE = regRecipe(
-            "carved_pumpkin_duplicate", PumpkinDuplicateRecipe::new);
+    public static final Supplier<RecipeSerializer<ModCarvedPumpkinRecipe>> CARVED_PUMPKIN_RECIPE = regRecipe(
+            "carved_pumpkin", ModCarvedPumpkinRecipe::new);
 
-    public static final Supplier<RecipeSerializer<JackOLanternRecipe>> JACK_O_LANTERN_RECIPE = regRecipe(
-            "jack_o_lantern", JackOLanternRecipe::new);
 
     public static final Supplier<Block> CORN_BASE = regBlock("corn_base", () -> new CornBaseBlock(
             BlockBehaviour.Properties.copy(Blocks.WHEAT)

@@ -6,7 +6,9 @@
   "client": [
   ],
   "mixins": [
-    "SelfCarvedPumpkinItemMixin"
+    "SelfCarvedPumpkinItemMixin",
+    "SnowGolemMixin",
+    "SnowGolemHeadLayerMixin"
   ],
   "injectors": {
     "defaultRequire": 1

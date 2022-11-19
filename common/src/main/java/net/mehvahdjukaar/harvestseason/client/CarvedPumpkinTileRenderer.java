@@ -2,11 +2,9 @@ package net.mehvahdjukaar.harvestseason.client;
 
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
-import com.mojang.datafixers.util.Pair;
 import net.mehvahdjukaar.harvestseason.blocks.ModCarvedPumpkinBlock;
 import net.mehvahdjukaar.harvestseason.blocks.ModCarvedPumpkinBlockTile;
 import net.mehvahdjukaar.harvestseason.reg.ClientRegistry;
-import net.mehvahdjukaar.harvestseason.reg.ModConfigs;
 import net.mehvahdjukaar.moonlight.api.client.util.LOD;
 import net.mehvahdjukaar.moonlight.api.client.util.RotHlpr;
 import net.minecraft.client.Camera;

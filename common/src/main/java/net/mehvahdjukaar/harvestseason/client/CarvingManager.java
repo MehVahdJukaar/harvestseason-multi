@@ -6,15 +6,18 @@ import com.google.common.cache.CacheLoader;
 import com.google.common.cache.LoadingCache;
 import com.mojang.blaze3d.platform.NativeImage;
 import com.mojang.blaze3d.systems.RenderSystem;
+import com.mojang.blaze3d.vertex.*;
+import net.mehvahdjukaar.harvestseason.HSPlatformStuff;
+import net.mehvahdjukaar.harvestseason.HarvestSeason;
 import net.mehvahdjukaar.harvestseason.blocks.ModCarvedPumpkinBlockTile;
-import net.mehvahdjukaar.harvestseason.reg.ClientRegistry;
+import net.mehvahdjukaar.moonlight.api.client.texture_renderer.FrameBufferBackedDynamicTexture;
+import net.mehvahdjukaar.moonlight.api.client.texture_renderer.RenderedTexturesManager;
 import net.mehvahdjukaar.moonlight.api.platform.ClientPlatformHelper;
+import net.mehvahdjukaar.moonlight.api.resources.textures.SpriteUtils;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.block.model.BakedQuad;
 import net.minecraft.client.renderer.texture.DynamicTexture;
-import net.minecraft.client.renderer.texture.TextureAtlasSprite;
-import net.minecraft.client.renderer.texture.TextureManager;
 import net.minecraft.client.resources.model.Material;
 import net.minecraft.core.Direction;
 import net.minecraft.resources.ResourceLocation;
@@ -31,8 +34,6 @@ import java.util.concurrent.TimeUnit;
 import java.util.function.Supplier;
 
 public class CarvingManager {
-
-    private static final TextureManager TEXTURE_MANAGER = Minecraft.getInstance().getTextureManager();
 
     private static final LoadingCache<Key, Carving> TEXTURE_CACHE = CacheBuilder.newBuilder()
             .expireAfterAccess(2, TimeUnit.MINUTES)
@@ -112,6 +113,10 @@ public class CarvingManager {
         private RenderType renderType;
         @Nullable
         private ResourceLocation textureLocation;
+        @Nullable
+        private DynamicTexture blurTexture;
+        @Nullable
+        private ResourceLocation blurTextureLocation;
 
         private Carving(boolean[][] pixels, boolean glow) {
             this.pixels = pixels;
@@ -135,7 +140,7 @@ public class CarvingManager {
 
             for (int y = 0; y < pixels.length && y < WIDTH; y++) {
                 for (int x = 0; x < pixels[y].length && x < WIDTH; x++) { //getColoredPixel(BlackboardBlock.colorFromByte(pixels[x][y]),x,y)
-                   int c = ClientPlatformHelper.getPixelRGBA(materials[x][y].sprite(),0, x, y);
+                    int c = ClientPlatformHelper.getPixelRGBA(materials[x][y].sprite(), 0, x, y);
 
                     this.texture.getPixels().setPixelRGBA(x, y, c);
                 }
@@ -143,9 +148,10 @@ public class CarvingManager {
             this.texture.upload();
 
             //texture manager has its own internal id
-            this.textureLocation = TEXTURE_MANAGER.register("blackboard/", this.texture);
+            this.textureLocation = Minecraft.getInstance().getTextureManager().register("carving/", this.texture);
             this.renderType = RenderType.entitySolid(textureLocation);
         }
+
 
         @Nonnull
         public List<BakedQuad> getOrCreateModel(Direction dir, Supplier<List<BakedQuad>> modelFactory) {
@@ -161,6 +167,10 @@ public class CarvingManager {
             return textureLocation;
         }
 
+        public ResourceLocation getPumpkinBlur() {
+            return getBlurTexture(this);
+        }
+
         @Nonnull
         public RenderType getRenderType() {
             if (renderType == null) {
@@ -174,9 +184,78 @@ public class CarvingManager {
         @Override
         public void close() {
             if (texture != null) this.texture.close();
-            if (textureLocation != null) TEXTURE_MANAGER.release(textureLocation);
+            if (textureLocation != null) Minecraft.getInstance().getTextureManager().release(textureLocation);
         }
     }
+
+    //no need to register a bunch of these just having one since theres only one player
+    private static Carving currentCarvingBlur = null;
+    private static FrameBufferBackedDynamicTexture pumpkinBlur = null;
+
+    protected static ResourceLocation getBlurTexture(Carving carving) {
+        if (pumpkinBlur == null) {
+            pumpkinBlur = RenderedTexturesManager.requestTexture(HarvestSeason.res("pumpkinblur"), 512,
+                    t -> redrawBlur(carving.getPixels(), t), false);
+        } else if (carving != currentCarvingBlur) {
+            redrawBlur(carving.getPixels(), pumpkinBlur);
+        }
+        currentCarvingBlur = carving;
+        return pumpkinBlur.getTextureLocation();
+    }
+
+
+    private static DynamicTexture dummy = null;
+    private static ResourceLocation dummyLocation = null;
+
+    private static void redrawBlur(boolean[][] pixels, FrameBufferBackedDynamicTexture t) {
+        if (dummyLocation == null) {
+            dummy = new DynamicTexture(18, 18, false);
+            dummyLocation = Minecraft.getInstance().getTextureManager().register("carving/", dummy);
+        }
+        var p = dummy.getPixels();
+        SpriteUtils.forEachPixel(p, (x, y) -> {
+            int alpha = 0;
+            if (x == 0 || x == 17 || y == 0 || y == 17 || !pixels[x - 1][y - 1]) {
+                alpha = 255;
+            }
+            p.setPixelRGBA(x, y, NativeImage.combine(alpha, 0, 0, 0));
+        });
+
+        dummy.upload();
+        dummy.setFilter(true, false);
+
+        RenderedTexturesManager.drawAsInGUI(t, s -> {
+
+            int width = 16;
+            int height = 16;
+            int blitOffset = 2000;
+
+            float u0 = 1 / 18f;
+            float u1 = 17 / 18f;
+
+            RenderSystem.setShaderTexture(0, dummyLocation);
+
+            var matrix = s.last().pose();
+
+            RenderSystem.disableDepthTest();
+            RenderSystem.depthMask(false);
+            RenderSystem.disableBlend();
+
+            RenderSystem.setShader(HSPlatformStuff::getBlur);
+            RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1);
+
+            BufferBuilder bufferBuilder = Tesselator.getInstance().getBuilder();
+            bufferBuilder.begin(VertexFormat.Mode.QUADS, DefaultVertexFormat.POSITION_TEX);
+            bufferBuilder.vertex(matrix, 0.0f, height, blitOffset).uv(u0, u0).endVertex();
+            bufferBuilder.vertex(matrix, width, height, blitOffset).uv(u1, u0).endVertex();
+            bufferBuilder.vertex(matrix, width, 0.0f, blitOffset).uv(u1, u1).endVertex();
+            bufferBuilder.vertex(matrix, 0.0f, 0.0f, blitOffset).uv(u0, u1).endVertex();
+            BufferUploader.drawWithShader(bufferBuilder.end());
+        });
+
+        t.setFilter(true, false);
+    }
+
 
 }
 

@@ -31,7 +31,6 @@ public class PumpkinBlurGuiOverlay extends Gui implements IGuiOverlay {
 
 
     public void renderPumpkin(ItemStack itemstack, int width, int height) {
-        ((ForgeGui) this.minecraft.gui).setupOverlayRenderState(true, false);
         CompoundTag tag = itemstack.getTag();
         if(tag != null) {
 
@@ -40,12 +39,14 @@ public class PumpkinBlurGuiOverlay extends Gui implements IGuiOverlay {
             if (com != null && com.contains("Pixels")) {
                 packed = com.getLongArray("Pixels");
             }
-            var blackboard = CarvingManager.getInstance(CarvingManager.Key.of(packed, false));
-            var textureLocation = blackboard.getTextureLocation();
+            var carving = CarvingManager.getInstance(CarvingManager.Key.of(packed, false));
+            var textureLocation = carving.getPumpkinBlur();
+
             RenderSystem.disableDepthTest();
             RenderSystem.depthMask(false);
             RenderSystem.defaultBlendFunc();
-            RenderSystem.setShader(HarvestSeasonForgeClient::getBlur);
+
+            RenderSystem.setShader(GameRenderer::getPositionTexShader);
             RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1);
             RenderSystem.setShaderTexture(0, textureLocation);
             Tesselator tesselator = Tesselator.getInstance();

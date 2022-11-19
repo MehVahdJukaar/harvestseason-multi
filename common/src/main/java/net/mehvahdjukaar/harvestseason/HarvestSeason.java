@@ -1,10 +1,9 @@
 package net.mehvahdjukaar.harvestseason;
 
-import dev.architectury.injectables.annotations.ExpectPlatform;
 import net.mehvahdjukaar.harvestseason.blocks.ModCarvedPumpkinBlock;
 import net.mehvahdjukaar.harvestseason.integration.FDCompat;
 import net.mehvahdjukaar.harvestseason.network.NetworkHandler;
-import net.mehvahdjukaar.harvestseason.reg.ModConfigs;
+import net.mehvahdjukaar.harvestseason.configs.ModConfigs;
 import net.mehvahdjukaar.harvestseason.reg.ModRegistry;
 import net.mehvahdjukaar.moonlight.api.misc.EventCalled;
 import net.mehvahdjukaar.moonlight.api.platform.PlatformHelper;
@@ -22,10 +21,13 @@ import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.item.*;
-import net.minecraft.world.item.context.BlockPlaceContext;
+import net.minecraft.world.item.Item;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.Items;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
+import net.minecraft.world.level.block.ComposterBlock;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.gameevent.GameEvent;
 import net.minecraft.world.phys.BlockHitResult;
@@ -52,13 +54,15 @@ public class HarvestSeason {
         ModConfigs.earlyLoad();
 
         ModRegistry.init();
-        if(FD_INSTALLED) FDCompat.init();
+        if (FD_INSTALLED) FDCompat.init();
         NetworkHandler.registerMessages();
     }
 
     //needs to be fired after configs are loaded
     public static void commonSetup() {
-
+        ComposterBlock.COMPOSTABLES.put(ModRegistry.MOD_CARVED_PUMPKIN.get().asItem(), 0.65F);
+        ComposterBlock.COMPOSTABLES.put(ModRegistry.CORN_SEEDS.get().asItem(), 0.3F);
+        ComposterBlock.COMPOSTABLES.put(ModRegistry.COB_ITEM.get().asItem(), 0.5F);
     }
 
 
@@ -67,6 +71,7 @@ public class HarvestSeason {
 
     public static final TagKey<Item> MODDED_CANDIES = itemTag("candy");
     public static final TagKey<Item> CARVERS = itemTag("pumpkin_carvers");
+    public static final TagKey<Item> CARVABLE_PUMPKINS = itemTag("carvable_pumpkins");
 
     private static TagKey<Item> itemTag(String name) {
         return TagKey.create(Registry.ITEM_REGISTRY, HarvestSeason.res(name));
@@ -84,10 +89,10 @@ public class HarvestSeason {
 
                     level.playSound(null, pos, SoundEvents.PUMPKIN_CARVE, SoundSource.BLOCKS, 1.0F, 1.0F);
                     ItemEntity itemEntity = new ItemEntity(level,
-                            pos.getX() + 0.5, pos.getY() + 1.15f, pos.getZ() + 0.5 ,
+                            pos.getX() + 0.5, pos.getY() + 1.15f, pos.getZ() + 0.5,
                             new ItemStack(Items.PUMPKIN_SEEDS, 4));
 
-                    itemEntity.setDeltaMovement(level.random.nextDouble() * 0.02, 0.05+level.random.nextDouble() * 0.02, level.random.nextDouble() * 0.02);
+                    itemEntity.setDeltaMovement(level.random.nextDouble() * 0.02, 0.05 + level.random.nextDouble() * 0.02, level.random.nextDouble() * 0.02);
                     level.addFreshEntity(itemEntity);
 
                     CriteriaTriggers.ITEM_USED_ON_BLOCK.trigger((ServerPlayer) player, pos, stack);
@@ -102,8 +107,6 @@ public class HarvestSeason {
         }
         return InteractionResult.PASS;
     }
-
-
 
 
 }
